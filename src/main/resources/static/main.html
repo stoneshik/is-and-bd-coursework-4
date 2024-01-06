@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Типофаст</title>
+    <link rel="stylesheet" href="includes/styles/main.css">
+    <script src="includes/js/js_cookie.min.js"></script>
+</head>
+<body>
+<div id="header" class="container">
+    <div class="container"><a href="main.html" class="none-underline"><h2>TypoFast</h2></a></div>
+    <div class="container">
+        <ul class="menu row">
+            <li><a>помощь</a></li>
+            <li><a href="map.html">мы на карте</a></li>
+            <li><a href="files.html">файлы</a></li>
+            <li><a href="cart.html">корзина</a></li>
+            <li id="hamburger">
+                <div class="description">аккаунт</div>
+                <div class="hamburger-wrapper">
+                    <ul>
+                        <li><a id="login"></a></li>
+                        <li><a>1337,00р</a></li>
+                        <li><a>пополнить счет</a></li>
+                        <li><a href="personal_account.html">личный кабинет</a></li>
+                        <li><a href="index.html" onclick="logout();">выйти</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="wrapper" class="container">
+    <div id="content">
+        <div id="orders">
+            <h3>Оплаченные заказы</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>Номер заказа</th>
+                    <th>Тип заказа</th>
+                    <th>Дата заказа</th>
+                    <th>Осталось</th>
+                    <th>Сумма заказа</th>
+                    <th>Адрес</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h2>Новый заказ</h2>
+            <div class="container double-column">
+                <a class="new-order-wrapper" href="new-order-print.html">
+                    <div class="new-order">
+                        <img src="includes/img/printer.png" alt="printer">
+                        <h3>Заказ на печать</h3>
+                    </div>
+                </a>
+                <a class="new-order-wrapper" href="new-order-scan.html">
+                    <div class="new-order">
+                        <img src="includes/img/scanner.png" alt="scanner">
+                        <h3>Заказ на сканирование</h3>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer" class="container">
+    <div class="column">
+        <h3>О компании</h3>
+        <ul class="menu menu-column">
+            <li><a>Реквизиты</a></li>
+            <li><a>Политика<br>конфиденциальности</a></li>
+            <li><a>Публичная оферта</a></li>
+        </ul>
+        <h5>©2023 Все права защищены</h5>
+    </div>
+    <div class="column">
+        <h3>Навигация</h3>
+        <ul class="menu menu-column">
+            <li><a>О нас</a></li>
+            <li><a>Помощь</a></li>
+            <li><a href="map.html">Мы на карте</a></li>
+            <li><a href="login.html">Вход</a></li>
+        </ul>
+    </div>
+    <div class="column">
+        <h3>Наши соцсети</h3>
+        <ul class="menu">
+            <li><a><img src="includes/img/VK_Compact_Logo_(2021-present).svg.webp" alt="vk"></a></li>
+            <li><a><img src="includes/img/Telegram_2019_Logo.svg.png" alt="telegram"></a></li>
+        </ul>
+        <h4>Email: info@typofast.ru</h4>
+    </div>
+</div>
+<script>
+function logout() {
+    Cookies.remove('is_first_load_cart');
+    Cookies.remove('is_first_load');
+    Cookies.remove('order_print');
+    Cookies.remove('order_scan');
+    Cookies.remove('order_print_cart');
+    Cookies.remove('order_scan_cart');
+}
+function removeValueFromCookies(nameKeyInCookie, num) {
+    const orders = JSON.parse(Cookies.get(nameKeyInCookie));
+    let newOrders = [];
+    for (let i = 0; i < orders.length; i++) {
+        const orderPrint = orders[i];
+        if (String(orderPrint['num']) === String(num)) {
+            continue;
+        }
+        newOrders.push(orderPrint);
+    }
+    Cookies.set(nameKeyInCookie, JSON.stringify(newOrders));
+}
+function remove(e) {
+    const result = confirm("Вы уверены что хотите удалить заказ?");
+    if (!result) {
+        return false;
+    }
+    const elements = e.parentElement.parentElement.getElementsByTagName('td');
+    const num = elements[0].innerText;
+    if (elements[1].innerText === 'печать') {
+        removeValueFromCookies('order_print', num);
+    } else {
+        removeValueFromCookies('order_scan', num);
+    }
+    e.parentElement.parentElement.remove();
+}
+function addRows(tbodyHtml, nameKeyInCookie) {
+    const ordersRaw = Cookies.get(nameKeyInCookie);
+    if (ordersRaw === undefined) {
+        return false;
+    }
+    const orders = JSON.parse(ordersRaw);
+    let elementString = '';
+    for (let i = 0; i < orders.length; i++) {
+        const order = orders[i];
+        elementString += '<tr>\n' +
+            '               <td class="num"><a href="order_print.html" title="Подробнее о заказе">' + order['num'] + '</a></td>\n' +
+            '               <td>' + order['type'] + '</td>\n' +
+            '               <td>' + order['date'] + '</td>\n' +
+            '               <td>' + order['days'] + '</td>\n' +
+            '               <td>' + order['amount'] + '</td>\n' +
+            '               <td class="address">' + order['address'] + '</td>\n' +
+            '               <td><img src="includes/img/cross.png" alt="cross" style="width: 24px;" onclick="remove(this);"></td>\n' +
+            '             </tr>';
+    }
+    tbodyHtml.innerHTML += elementString;
+}
+function startCookies() {
+    let isFirstLoad = Cookies.get('is_first_load');
+    if (isFirstLoad !== undefined) {
+        return false;
+    }
+    Cookies.set('is_first_load', true);
+    const orderPrints = [{
+        'num': 333444,
+        'type': 'печать',
+        'date': '13.12.2023',
+        'days': '3 дня',
+        'amount': '28.00 руб.',
+        'address': 'Невский пр-кт, д. 24'
+    }];
+    const scanPrints = [{
+        'num': 111321,
+        'type': 'сканирование',
+        'date': '14.12.2023',
+        'days': '4 дня',
+        'amount': '5.00 руб.',
+        'address': 'Невский пр-кт, д. 24'
+    }]
+    Cookies.set('order_print', JSON.stringify(orderPrints));
+    Cookies.set('order_scan', JSON.stringify(scanPrints));
+}
+function updateLogin() {
+    let loginValue = Cookies.get('login');
+    if (loginValue === undefined) {
+        loginValue = 'sus';
+    }
+    const loginHtml = document.getElementById('login');
+    loginHtml.innerText = loginValue;
+}
+window.onload = () => {
+    updateLogin();
+    const tableHtml = document.getElementById('orders').getElementsByTagName('tbody');
+    if (tableHtml.length <= 0) {
+        return false;
+    }
+    const tbodyHtml = tableHtml[0];
+    startCookies();
+    addRows(tbodyHtml, 'order_print');
+    addRows(tbodyHtml, 'order_scan');
+}
+</script>
+</body>
+</html>

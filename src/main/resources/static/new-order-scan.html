@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Типофаст</title>
+    <link rel="stylesheet" href="includes/styles/main.css">
+    <script src="includes/js/js_cookie.min.js"></script>
+</head>
+<body>
+<div id="header" class="container">
+    <div class="container"><a href="main.html" class="none-underline"><h2>TypoFast</h2></a></div>
+    <div class="container">
+        <ul class="menu row">
+            <li><a>помощь</a></li>
+            <li><a href="map.html">мы на карте</a></li>
+            <li><a href="files.html">файлы</a></li>
+            <li><a href="cart.html">корзина</a></li>
+            <li id="hamburger">
+                <div class="description">аккаунт</div>
+                <div class="hamburger-wrapper">
+                    <ul>
+                        <li><a id="login"></a></li>
+                        <li><a>1337,00р</a></li>
+                        <li><a>пополнить счет</a></li>
+                        <li><a href="personal_account.html">личный кабинет</a></li>
+                        <li><a href="index.html" onclick="logout();">выйти</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="wrapper" class="container">
+    <div id="new_order_wrapper" class="container">
+        <form action="main.html" class="ui-form main-form" id="new_order_form">
+            <h3>Заказ на сканирование</h3>
+            <div class="form-row">
+                <label for="address">Выбор места:</label>
+                <select id="address" name="address" size="3" class="select">
+                    <option selected>Невский пр-кт, д. 1</option>
+                    <option>ул. Чайковского, д. 2</option>
+                    <option>ул. Шаврова, д. 3</option>
+                    <option>Невский пр-кт, д. 4</option>
+                    <option>ул. Чайковского, д. 5</option>
+                    <option>ул. Шаврова, д. 6</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <input type="text" id="num_field" required autocomplete="off" oninput="inputField(this);">
+                <label for="num_field" class="text-input-label">Число страниц:</label>
+            </div>
+            <div class="form-row" id="pay_button">
+                <p>Оплатить <strong id="amount">0 руб.</strong></p>
+                <input type="submit" value="Сейчас" id="pay_button_first" onclick="nowSubmit();">
+                <input type="submit" value="Позже" id="pay_button_second" onclick="laterSubmit();">
+            </div>
+        </form>
+        <div style="position:relative;overflow:hidden;" id="map">
+            <a href="https://yandex.ru/maps/2/saint-petersburg/?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Санкт‑Петербург</a><a href="https://yandex.ru/maps/2/saint-petersburg/?ll=30.315635%2C59.938951&utm_medium=mapframe&utm_source=maps&z=11" style="color:#eee;font-size:12px;position:absolute;top:14px;">Карта Санкт-Петербурга с улицами и номерами домов — Яндекс Карты</a><iframe src="https://yandex.ru/map-widget/v1/?ll=30.315635%2C59.938951&z=11" width="700" height="500" frameborder="0" allowfullscreen="true" style="position:relative;"></iframe>
+        </div>
+    </div>
+</div>
+<div id="footer" class="container">
+    <div class="column">
+        <h3>О компании</h3>
+        <ul class="menu menu-column">
+            <li><a>Реквизиты</a></li>
+            <li><a>Политика<br>конфиденциальности</a></li>
+            <li><a>Публичная оферта</a></li>
+        </ul>
+        <h5>©2023 Все права защищены</h5>
+    </div>
+    <div class="column">
+        <h3>Навигация</h3>
+        <ul class="menu menu-column">
+            <li><a>О нас</a></li>
+            <li><a>Помощь</a></li>
+            <li><a href="map.html">Мы на карте</a></li>
+            <li><a href="login.html">Вход</a></li>
+        </ul>
+    </div>
+    <div class="column">
+        <h3>Наши соцсети</h3>
+        <ul class="menu">
+            <li><a><img src="includes/img/VK_Compact_Logo_(2021-present).svg.webp" alt="vk"></a></li>
+            <li><a><img src="includes/img/Telegram_2019_Logo.svg.png" alt="telegram"></a></li>
+        </ul>
+        <h4>Email: info@typofast.ru</h4>
+    </div>
+</div>
+<script>
+function logout() {
+    Cookies.remove('is_first_load_cart');
+    Cookies.remove('is_first_load');
+    Cookies.remove('order_print');
+    Cookies.remove('order_scan');
+    Cookies.remove('order_print_cart');
+    Cookies.remove('order_scan_cart');
+}
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
+}
+function formatDate(date) {
+    let day = String(date.getDate());
+    let month = String(date.getMonth() + 1);
+    let year = String(date.getFullYear());
+    if (day.length < 2) {
+        day = '0' + day;
+    }
+    if (month.length < 2) {
+        month = '0' + month;
+    }
+    return day + '.' + month + '.' + year;
+}
+function updateNum(e) {
+    const value = e.value;
+    const amountHtml = document.getElementById('amount');
+    amountHtml.innerHTML = String(value * 0.5) + ' руб.';
+}
+function updateCookie(nameKeyInCookie) {
+    const amountHtml = document.getElementById('amount');
+    const amount = amountHtml.innerText;
+    if (amount === '0 руб.') {
+        return false;
+    }
+    const addressHtml = document.getElementById('address');
+    const address = addressHtml.value;
+    if (address === '') {
+        return false;
+    }
+    let orderScan = Cookies.get(nameKeyInCookie);
+    if (orderScan === undefined) {
+        orderScan = [];
+    } else {
+        orderScan = JSON.parse(orderScan);
+    }
+    const date = new Date();
+    orderScan.push(
+        {
+            'num': getRandomInt(100000, 999999),
+            'type': 'сканирование',
+            'date': formatDate(date),
+            'days': '7 дней',
+            'amount': amount,
+            'address': address
+        }
+    );
+    Cookies.set(nameKeyInCookie, JSON.stringify(orderScan));
+}
+function inputField(e) {
+    if (e.value) {
+        e.classList.add('inputting_field');
+    } else {
+        e.classList.remove('inputting_field');
+    }
+    updateNum(e);
+}
+function nowSubmit() {
+    updateCookie('order_scan');
+}
+function laterSubmit() {
+    updateCookie('order_scan_cart');
+}
+function updateLogin() {
+    let loginValue = Cookies.get('login');
+    if (loginValue === undefined) {
+        loginValue = 'sus';
+    }
+    const loginHtml = document.getElementById('login');
+    loginHtml.innerText = loginValue;
+}
+window.onload = () => {
+    updateLogin();
+}
+</script>
+</body>
+</html>

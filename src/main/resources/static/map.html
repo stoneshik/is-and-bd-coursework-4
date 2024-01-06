@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Типофаст</title>
+    <link rel="stylesheet" href="includes/styles/main.css">
+    <script src="includes/js/js_cookie.min.js"></script>
+</head>
+<body>
+<div id="header" class="container">
+    <div class="container"><a href="main.html" class="none-underline"><h2>TypoFast</h2></a></div>
+    <div class="container">
+        <ul class="menu row">
+            <li><a>помощь</a></li>
+            <li><a href="map.html">мы на карте</a></li>
+            <li><a href="files.html">файлы</a></li>
+            <li><a href="cart.html">корзина</a></li>
+            <li id="hamburger">
+                <div class="description">аккаунт</div>
+                <div class="hamburger-wrapper">
+                    <ul>
+                        <li><a id="login"></a></li>
+                        <li><a>1337,00р</a></li>
+                        <li><a>пополнить счет</a></li>
+                        <li><a href="personal_account.html">личный кабинет</a></li>
+                        <li><a href="index.html" onclick="logout();">выйти</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="wrapper" class="container">
+    <div style="position:relative;overflow:hidden;" id="map">
+        <a href="https://yandex.ru/maps/2/saint-petersburg/?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Санкт‑Петербург</a><a href="https://yandex.ru/maps/2/saint-petersburg/?ll=30.315635%2C59.938951&utm_medium=mapframe&utm_source=maps&z=11" style="color:#eee;font-size:12px;position:absolute;top:14px;">Карта Санкт-Петербурга с улицами и номерами домов — Яндекс Карты</a><iframe src="https://yandex.ru/map-widget/v1/?ll=30.315635%2C59.938951&z=11" width="800" height="500" frameborder="0" allowfullscreen="true" style="position:relative;"></iframe>
+    </div>
+</div>
+<div id="footer" class="container">
+    <div class="column">
+        <h3>О компании</h3>
+        <ul class="menu menu-column">
+            <li><a>Реквизиты</a></li>
+            <li><a>Политика<br>конфиденциальности</a></li>
+            <li><a>Публичная оферта</a></li>
+        </ul>
+        <h5>©2023 Все права защищены</h5>
+    </div>
+    <div class="column">
+        <h3>Навигация</h3>
+        <ul class="menu menu-column">
+            <li><a>О нас</a></li>
+            <li><a>Помощь</a></li>
+            <li><a href="map.html">Мы на карте</a></li>
+            <li><a href="login.html">Вход</a></li>
+        </ul>
+    </div>
+    <div class="column">
+        <h3>Наши соцсети</h3>
+        <ul class="menu">
+            <li><a><img src="includes/img/VK_Compact_Logo_(2021-present).svg.webp" alt="vk"></a></li>
+            <li><a><img src="includes/img/Telegram_2019_Logo.svg.png" alt="telegram"></a></li>
+        </ul>
+        <h4>Email: info@typofast.ru</h4>
+    </div>
+</div>
+<script>
+function logout() {
+    Cookies.remove('is_first_load_cart');
+    Cookies.remove('is_first_load');
+    Cookies.remove('order_print');
+    Cookies.remove('order_scan');
+    Cookies.remove('order_print_cart');
+    Cookies.remove('order_scan_cart');
+}
+function updateLogin() {
+    let loginValue = Cookies.get('login');
+    if (loginValue === undefined) {
+        loginValue = 'sus';
+    }
+    const loginHtml = document.getElementById('login');
+    loginHtml.innerText = loginValue;
+}
+window.onload = () => {
+    updateLogin();
+}
+</script>
+</body>
+</html>

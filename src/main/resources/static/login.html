@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Типофаст</title>
+    <link rel="stylesheet" href="includes/styles/main.css">
+    <script src="includes/js/js_cookie.min.js"></script>
+</head>
+<body>
+<div id="header" class="container">
+    <div class="container"><a href="index.html" class="none-underline"><h2>TypoFast</h2></a></div>
+    <div class="container">
+        <ul class="menu row">
+            <li><a>о нас</a></li>
+            <li><a>помощь</a></li>
+            <li><a href="map_without_login.html">мы на карте</a></li>
+            <li><a href="login.html">вход</a></li>
+        </ul>
+    </div>
+</div>
+<div id="wrapper" class="container">
+    <div>
+        <form action="main.html" class="ui-form main-form" id="login_form" onsubmit="handlingSubmit();">
+            <div class="form-row">
+                <input type="text" id="login-field" required autocomplete="off" oninput="inputField(this);">
+                <label for="login-field" class="text-input-label">Логин:</label>
+            </div>
+            <div class="form-row">
+                <input type="password" id="password-field" required autocomplete="off" oninput="inputField(this);">
+                <label for="password-field" class="text-input-label">Пароль:</label>
+            </div>
+            <input type="submit" value="Войти">
+            <a href="forgot_password_email.html" id="forgot-password">Забыли пароль?</a>
+            <ul class="menu">
+                <li><a><img src="includes/img/VK_Compact_Logo_(2021-present).svg.webp" alt="vk"></a></li>
+                <li><a><img src="includes/img/32_@mail_sign_only_square_b.svg" alt="email"></a></li>
+                <li><a><img src="includes/img/Yandex_icon.svg.png" alt="yandex"></a></li>
+            </ul>
+        </form>
+        <form action="register.html" class="ui-form second-form">
+            <input type="submit" value="Зарегистрироваться">
+        </form>
+    </div>
+</div>
+<div id="footer" class="container">
+    <div class="column">
+        <h3>О компании</h3>
+        <ul class="menu menu-column">
+            <li><a>Реквизиты</a></li>
+            <li><a>Политика<br>конфиденциальности</a></li>
+            <li><a>Публичная оферта</a></li>
+        </ul>
+        <h5>©2023 Все права защищены</h5>
+    </div>
+    <div class="column">
+        <h3>Навигация</h3>
+        <ul class="menu menu-column">
+            <li><a>О нас</a></li>
+            <li><a>Помощь</a></li>
+            <li><a href="map_without_login.html">Мы на карте</a></li>
+            <li><a href="login.html">Вход</a></li>
+        </ul>
+    </div>
+    <div class="column">
+        <h3>Наши соцсети</h3>
+        <ul class="menu">
+            <li><a><img src="includes/img/VK_Compact_Logo_(2021-present).svg.webp" alt="vk"></a></li>
+            <li><a><img src="includes/img/Telegram_2019_Logo.svg.png" alt="telegram"></a></li>
+        </ul>
+        <h4>Email: info@typofast.ru</h4>
+    </div>
+</div>
+<script>
+function handlingSubmit() {
+    const loginField = document.getElementById('login-field');
+    const loginValue = loginField.value;
+    Cookies.set('login', loginValue);
+}
+function inputField(e) {
+    if (e.value) {
+        e.classList.add('inputting_field');
+    } else {
+        e.classList.remove('inputting_field');
+    }
+}
+</script>
+</body>
+</html>
