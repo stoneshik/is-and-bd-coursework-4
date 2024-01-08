@@ -40,10 +40,6 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                /*.formLogin((form) -> form
-                        .loginPage("/login")
-                        .permitAll()
-                )*/
                 .logout(LogoutConfigurer::permitAll);
 
         return http.build();
