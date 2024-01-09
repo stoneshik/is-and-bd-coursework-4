@@ -20,7 +20,7 @@ public class AuthorizationController {
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthorizeHandler authorizeHandler;
 
-    @PostMapping("/api/auth")
+    @PostMapping("/api/open/auth")
     public ResponseEntity<String> auth(@RequestBody AuthDto authDto, HttpServletRequest httpServletRequest) {
         final String login = authDto.getLogin();
         final String password = authDto.getPassword();
