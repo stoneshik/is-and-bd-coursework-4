@@ -23,17 +23,17 @@ public class AuthorizeHandler {
         return httpSession.getId();
     }
 
-    public boolean isAuthorized(HttpServletRequest httpServletRequest) {
-        final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
-        return sessionIds.contains(sessionId);
-    }
-
     private void addCookieFromHttpSession(HttpServletRequest httpServletRequest, String sessionId) {
         sessionIds.add(sessionId);
     }
 
     private void removeCookieFromHttpSession(HttpServletRequest httpServletRequest, String sessionId) {
         sessionIds.remove(sessionId);
+    }
+
+    public boolean isAuthorized(HttpServletRequest httpServletRequest) {
+        final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
+        return sessionIds.contains(sessionId);
     }
 
     public void newAuthorized(HttpServletRequest httpServletRequest, String login) {
