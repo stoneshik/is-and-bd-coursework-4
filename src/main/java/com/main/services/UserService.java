@@ -13,6 +13,16 @@ public class UserService implements UserRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
+    public int create(String email, String login, String password) {
+        return jdbcTemplate.update(
+                "insert into users values(default, ?, ?, ?, default, default)",
+                email,
+                login,
+                password
+        );
+    }
+
+    @Override
     public UserEntity findByLogin(String login) {
         try {
             return jdbcTemplate.queryForObject(
