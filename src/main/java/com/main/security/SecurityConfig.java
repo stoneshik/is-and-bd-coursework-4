@@ -18,10 +18,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    @Bean
-    public AuthorizeHandler authorizeHandler() {
-        return new AuthorizeHandler();
-    }
+    private final AuthorizeFilter authorizeFilter;
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -53,7 +51,7 @@ public class SecurityConfig {
                         ).permitAll()
                         //.anyRequest().authenticated()
                 )
-                .addFilterAfter(new AuthorizeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(authorizeFilter, BasicAuthenticationFilter.class)
                 .logout(logout -> logout.deleteCookies("JSESSIONID"));
         return http.build();
     }
