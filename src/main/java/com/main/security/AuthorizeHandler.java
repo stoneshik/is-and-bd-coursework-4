@@ -23,11 +23,16 @@ public class AuthorizeHandler {
         return httpSession.getId();
     }
 
-    private void addCookieFromHttpSession(HttpServletRequest httpServletRequest, String sessionId) {
+    private void closeSession(HttpServletRequest httpServletRequest) {
+        final HttpSession httpSession = httpServletRequest.getSession();
+        httpSession.invalidate();
+    }
+
+    private void addSessionId(String sessionId) {
         sessionIds.add(sessionId);
     }
 
-    private void removeCookieFromHttpSession(HttpServletRequest httpServletRequest, String sessionId) {
+    private void removeSessionId(String sessionId) {
         sessionIds.remove(sessionId);
     }
 
@@ -36,21 +41,24 @@ public class AuthorizeHandler {
         return sessionIds.contains(sessionId);
     }
 
-    public void newAuth(HttpServletRequest httpServletRequest, String login) {
+    public boolean newAuth(HttpServletRequest httpServletRequest, String login) {
         final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
         if (loginsBySessionIds.containsKey(sessionId)) {
-            return;
+            return false;
         }
-        addCookieFromHttpSession(httpServletRequest, sessionId);
+        addSessionId(sessionId);
         loginsBySessionIds.put(sessionId, login);
+        return true;
     }
 
-    public void logout(HttpServletRequest httpServletRequest) {
+    public boolean logout(HttpServletRequest httpServletRequest) {
         final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
         if (!loginsBySessionIds.containsKey(sessionId)) {
-            return;
+            return false;
         }
-        removeCookieFromHttpSession(httpServletRequest, sessionId);
+        closeSession(httpServletRequest);
+        removeSessionId(sessionId);
         loginsBySessionIds.remove(sessionId);
+        return true;
     }
 }

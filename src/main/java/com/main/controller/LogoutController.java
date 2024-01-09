@@ -1,20 +1,23 @@
 package com.main.controller;
 
-import com.main.dto.AuthDto;
-import com.main.entities.UserEntity;
+import com.main.security.AuthorizeHandler;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class LogoutController {
+    private final AuthorizeHandler authorizeHandler;
+
     @PostMapping("/api/logout")
     public ResponseEntity<String> auth(HttpServletRequest httpServletRequest) {
-        //authorizeHandler.newAuth(httpServletRequest, login);
-
-        return new ResponseEntity<>("Успешный вход", HttpStatus.OK);
+        if (!authorizeHandler.logout(httpServletRequest)) {
+            return new ResponseEntity<>("Информация об входе не найдена", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Успешный выход", HttpStatus.OK);
     }
 }

@@ -31,7 +31,9 @@ public class AuthorizationController {
         if (!passwordEncoder.matches(password, userEntity.getUserPasswordHash())) {
             return new ResponseEntity<>("Неправильный пароль", HttpStatus.NOT_FOUND);
         }
-        authorizeHandler.newAuth(httpServletRequest, login);
+        if (!authorizeHandler.newAuth(httpServletRequest, login)) {
+            return new ResponseEntity<>("Уже был произведен вход", HttpStatus.OK);
+        }
         return new ResponseEntity<>("Успешный вход", HttpStatus.OK);
     }
 }

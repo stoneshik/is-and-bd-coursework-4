@@ -37,26 +37,7 @@ public class SecurityConfig {
                                         SessionCreationPolicy.ALWAYS
                                 )
                 )
-                /*.authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(
-                                "/css/**",
-                                "/img/**",
-                                "/js/**",
-                                "/static/**",
-                                "/manifest.json",
-                                "/favicon.ico",
-                                "/index.html",
-                                "/",
-                                "/login",
-                                "/register",
-                                "/map_without_login",
-                                "/api/open/**",
-                                "/aboba"
-                        ).permitAll()
-                        //.anyRequest().authenticated()
-                )*/
-                .addFilterAfter(authorizeFilter, BasicAuthenticationFilter.class)
-                .logout(logout -> logout.deleteCookies("JSESSIONID"));
+                .addFilterAfter(authorizeFilter, BasicAuthenticationFilter.class);
         return http.build();
     }
 }
