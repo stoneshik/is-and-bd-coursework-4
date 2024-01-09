@@ -36,7 +36,7 @@ public class AuthorizeHandler {
         return sessionIds.contains(sessionId);
     }
 
-    public void newAuthorized(HttpServletRequest httpServletRequest, String login) {
+    public void newAuth(HttpServletRequest httpServletRequest, String login) {
         final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
         addCookieFromHttpSession(httpServletRequest, sessionId);
         if (loginsBySessionIds.containsKey(sessionId)) {
