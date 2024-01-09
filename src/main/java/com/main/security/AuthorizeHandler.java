@@ -38,19 +38,19 @@ public class AuthorizeHandler {
 
     public void newAuth(HttpServletRequest httpServletRequest, String login) {
         final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
-        addCookieFromHttpSession(httpServletRequest, sessionId);
         if (loginsBySessionIds.containsKey(sessionId)) {
             return;
         }
+        addCookieFromHttpSession(httpServletRequest, sessionId);
         loginsBySessionIds.put(sessionId, login);
     }
 
     public void logout(HttpServletRequest httpServletRequest) {
         final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
-        removeCookieFromHttpSession(httpServletRequest, sessionId);
         if (!loginsBySessionIds.containsKey(sessionId)) {
             return;
         }
+        removeCookieFromHttpSession(httpServletRequest, sessionId);
         loginsBySessionIds.remove(sessionId);
     }
 }

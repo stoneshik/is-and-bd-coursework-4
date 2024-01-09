@@ -37,7 +37,7 @@ public class SecurityConfig {
                                         SessionCreationPolicy.ALWAYS
                                 )
                 )
-                .authorizeHttpRequests((requests) -> requests
+                /*.authorizeHttpRequests((requests) -> requests
                         .requestMatchers(
                                 "/css/**",
                                 "/img/**",
@@ -54,7 +54,7 @@ public class SecurityConfig {
                                 "/aboba"
                         ).permitAll()
                         //.anyRequest().authenticated()
-                )
+                )*/
                 .addFilterAfter(authorizeFilter, BasicAuthenticationFilter.class)
                 .logout(logout -> logout.deleteCookies("JSESSIONID"));
         return http.build();
