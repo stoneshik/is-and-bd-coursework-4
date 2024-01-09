@@ -6,12 +6,16 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Component
 public class AuthorizeHandler {
-    private final ArrayList<String> authorizedCookies;
+    private final ArrayList<String> sessionIds;
+    private final HashMap<String, String> loginsBySessionIds;
+
     public AuthorizeHandler() {
-        authorizedCookies = new ArrayList<>();
+        sessionIds = new ArrayList<>();
+        loginsBySessionIds = new HashMap<>();
     }
 
     private String extractSessionIdFromHttpRequest(HttpServletRequest httpServletRequest) {
@@ -21,16 +25,32 @@ public class AuthorizeHandler {
 
     public boolean isAuthorized(HttpServletRequest httpServletRequest) {
         final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
-        return authorizedCookies.contains(sessionId);
+        return sessionIds.contains(sessionId);
     }
 
-    public void addCookieFromHttpSession(HttpServletRequest httpServletRequest) {
-        final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
-        authorizedCookies.add(sessionId);
+    private void addCookieFromHttpSession(HttpServletRequest httpServletRequest, String sessionId) {
+        sessionIds.add(sessionId);
     }
 
-    public void removeCookieFromHttpSession(HttpServletRequest httpServletRequest) {
+    private void removeCookieFromHttpSession(HttpServletRequest httpServletRequest, String sessionId) {
+        sessionIds.remove(sessionId);
+    }
+
+    public void newAuthorized(HttpServletRequest httpServletRequest, String login) {
         final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
-        authorizedCookies.remove(sessionId);
+        addCookieFromHttpSession(httpServletRequest, sessionId);
+        if (loginsBySessionIds.containsKey(sessionId)) {
+            return;
+        }
+        loginsBySessionIds.put(sessionId, login);
+    }
+
+    public void logout(HttpServletRequest httpServletRequest) {
+        final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
+        removeCookieFromHttpSession(httpServletRequest, sessionId);
+        if (!loginsBySessionIds.containsKey(sessionId)) {
+            return;
+        }
+        loginsBySessionIds.remove(sessionId);
     }
 }
