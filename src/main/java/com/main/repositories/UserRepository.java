@@ -5,5 +5,5 @@ import com.main.entities.UserEntity;
 import java.util.List;
 
 public interface UserRepository {
-    List<UserEntity> findByLogin(String login);
+    UserEntity findByLogin(String login);
 }
