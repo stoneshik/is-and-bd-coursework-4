@@ -47,7 +47,8 @@ public class SecurityConfig {
                                 "/",
                                 "/login",
                                 "/register",
-                                "/map_without_login"
+                                "/map_without_login",
+                                "/aboba"
                         ).permitAll()
                         //.anyRequest().authenticated()
                 )

@@ -21,5 +21,4 @@ public class RouterController {
     public String getMapWithoutLoginPage() {
         return "index";
     }
-
 }
