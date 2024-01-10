@@ -5,6 +5,21 @@ VALUES
     (default, 'moder', 'Роль модератора, работника сервиса, почти не имеет ограничений', default),
     (default, 'admin', 'Роль администратора, владельца сервиса, не имеет ограничений', default)
     ;
+INSERT INTO users(
+    user_id,
+    user_email,
+    user_login,
+    user_password_hash,
+    user_created_datetime,
+    user_status)
+VALUES
+    (0,
+     'admin@mail.ru',
+     'admin',
+     '$2a$12$DMCQJpUCLrF.eByReybQXOeYjE1s3WdRWVAbAAe8Vapb1xr0DQ4zq',
+     default,
+     'verified')
+    ;
 -- Вендинговые точки
 INSERT INTO vending_points(
     vending_point_id,

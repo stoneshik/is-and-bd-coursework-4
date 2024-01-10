@@ -1,3 +1,6 @@
+DROP TRIGGER IF EXISTS create_new_user_trigger ON users;
+DROP FUNCTION IF EXISTS create_new_user();
+DROP FUNCTION IF EXISTS get_role_id_by_name(varchar);
 DROP TABLE IF EXISTS
     -- Удаление ассоциативных сущностей
     user_roles,

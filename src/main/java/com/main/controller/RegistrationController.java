@@ -1,6 +1,5 @@
 package com.main.controller;
 
-import com.main.dto.AuthDto;
 import com.main.dto.RegisterDto;
 import com.main.entities.UserEntity;
 import com.main.services.UserService;
