@@ -13,7 +13,7 @@ INSERT INTO users(
     user_created_datetime,
     user_status)
 VALUES
-    (0,
+    (default,
      'admin@mail.ru',
      'admin',
      '$2a$12$DMCQJpUCLrF.eByReybQXOeYjE1s3WdRWVAbAAe8Vapb1xr0DQ4zq',
