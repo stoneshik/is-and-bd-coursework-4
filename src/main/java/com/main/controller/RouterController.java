@@ -21,4 +21,9 @@ public class RouterController {
     public String getMapWithoutLoginPage() {
         return "index";
     }
+
+    @GetMapping("/main")
+    public String getHomePage() {
+        return "index";
+    }
 }

@@ -36,6 +36,6 @@ public class RegistrationController {
         if (userService.create(email, login, password) == 0) {
             return new ResponseEntity<>("Не получилось создать пользователя", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Пользователь успешно создан", HttpStatus.OK);
+        return new ResponseEntity<>("Пользователь успешно создан", HttpStatus.CREATED);
     }
 }
