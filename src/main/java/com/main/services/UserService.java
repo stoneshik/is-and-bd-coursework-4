@@ -1,6 +1,6 @@
 package com.main.services;
 
-import com.main.entities.UserEntity;
+import com.main.entities.user.UserEntity;
 import com.main.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;

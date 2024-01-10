@@ -1,7 +1,7 @@
 package com.main.controller;
 
 import com.main.dto.RegisterDto;
-import com.main.entities.UserEntity;
+import com.main.entities.user.UserEntity;
 import com.main.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

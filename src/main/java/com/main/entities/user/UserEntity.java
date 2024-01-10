@@ -1,4 +1,4 @@
-package com.main.entities;
+package com.main.entities.user;
 
 import lombok.Data;
 
@@ -24,6 +24,6 @@ public class UserEntity {
         this.userLogin = userLogin;
         this.userPasswordHash = userPasswordHash;
         this.userCreatedDatetime = userCreatedDatetime;
-        this.userStatus = UserStatus.valueOf(userStatus);
+        this.userStatus = UserStatus.getValueByName(userStatus);
     }
 }

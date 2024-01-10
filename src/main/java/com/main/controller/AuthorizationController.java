@@ -1,7 +1,7 @@
 package com.main.controller;
 
 import com.main.dto.AuthDto;
-import com.main.entities.UserEntity;
+import com.main.entities.user.UserEntity;
 import com.main.security.AuthorizeHandler;
 import com.main.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController

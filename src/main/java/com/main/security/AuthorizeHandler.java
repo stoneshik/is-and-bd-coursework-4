@@ -61,4 +61,12 @@ public class AuthorizeHandler {
         loginsBySessionIds.remove(sessionId);
         return true;
     }
+
+    public String getLoginBySessionId(HttpServletRequest httpServletRequest) {
+        final String sessionId = extractSessionIdFromHttpRequest(httpServletRequest);
+        if (!loginsBySessionIds.containsKey(sessionId)) {
+            return "";
+        }
+        return loginsBySessionIds.get(sessionId);
+    }
 }
