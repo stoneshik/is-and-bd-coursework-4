@@ -1,5 +1,6 @@
 package com.main.controller;
 
+import com.main.ResponseMessageWrapper;
 import com.main.dto.AuthDto;
 import com.main.entities.user.UserEntity;
 import com.main.security.AuthorizeHandler;
@@ -28,21 +29,21 @@ public class AuthorizationController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> auth(
+    public ResponseEntity<ResponseMessageWrapper> auth(
             @Valid @RequestBody AuthDto authDto,
             HttpServletRequest httpServletRequest) {
         final String login = authDto.getLogin();
         final String password = authDto.getPassword();
         UserEntity userEntity = userService.findByLogin(login);
         if (userEntity == null) {
-            return new ResponseEntity<>("Пользователь не найден", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ResponseMessageWrapper("Пользователь не найден"), HttpStatus.NOT_FOUND);
         }
         if (!passwordEncoder.matches(password, userEntity.getUserPasswordHash())) {
-            return new ResponseEntity<>("Неправильный пароль", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseMessageWrapper("Неправильный пароль"), HttpStatus.BAD_REQUEST);
         }
         if (!authorizeHandler.newAuth(httpServletRequest, login)) {
-            return new ResponseEntity<>("Уже был произведен вход", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseMessageWrapper("Уже был произведен вход"), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Успешный вход", HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessageWrapper("Успешный вход"), HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 package com.main.controller;
 
+import com.main.ResponseMessageWrapper;
 import com.main.dto.RegisterDto;
 import com.main.entities.user.UserEntity;
 import com.main.services.UserService;
@@ -24,18 +25,18 @@ public class RegistrationController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> register(
+    public ResponseEntity<ResponseMessageWrapper> register(
             @Valid @RequestBody RegisterDto registerDto) {
         final String email = registerDto.getEmail();
         final String login = registerDto.getLogin();
         final String password = passwordEncoder.encode(registerDto.getPassword());
         UserEntity userEntity = userService.findByLogin(login);
         if (userEntity != null) {
-            return new ResponseEntity<>("Пользователь с таким логином уже существует", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseMessageWrapper("Пользователь с таким логином уже существует"), HttpStatus.BAD_REQUEST);
         }
         if (userService.create(email, login, password) == 0) {
-            return new ResponseEntity<>("Не получилось создать пользователя", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseMessageWrapper("Не получилось создать пользователя"), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Пользователь успешно создан", HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseMessageWrapper("Пользователь успешно создан"), HttpStatus.CREATED);
     }
 }

@@ -1,5 +1,6 @@
 package com.main.controller;
 
+import com.main.ResponseMessageWrapper;
 import com.main.entities.order.OrderWithAddress;
 import com.main.security.AuthorizeHandler;
 import com.main.services.OrderWithAddressService;
@@ -26,7 +27,7 @@ public class OrderController {
     public ResponseEntity<Object> getPaidOrders(HttpServletRequest httpServletRequest) {
         final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
         if (login.isEmpty()) {
-            return new ResponseEntity<>("Пользователь не авторизован", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ResponseMessageWrapper("Пользователь не авторизован"), HttpStatus.NOT_FOUND);
         }
         final List<OrderWithAddress> orders = orderWithAddressService.getPaidOrders(login);
         return new ResponseEntity<>(orders, HttpStatus.OK);

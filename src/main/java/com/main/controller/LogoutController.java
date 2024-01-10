@@ -1,5 +1,6 @@
 package com.main.controller;
 
+import com.main.ResponseMessageWrapper;
 import com.main.security.AuthorizeHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,10 @@ public class LogoutController {
             path = "/api/logout",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> auth(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ResponseMessageWrapper> auth(HttpServletRequest httpServletRequest) {
         if (!authorizeHandler.logout(httpServletRequest)) {
-            return new ResponseEntity<>("Информация об входе не найдена", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ResponseMessageWrapper("Информация об входе не найдена"), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("Успешный выход", HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessageWrapper("Успешный выход"), HttpStatus.OK);
     }
 }
