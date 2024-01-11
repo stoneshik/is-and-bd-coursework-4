@@ -32,4 +32,17 @@ public class OrderController {
         final List<OrderWithAddress> orders = orderWithAddressService.getPaidOrders(login);
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
+
+    @GetMapping(
+            path = "/api/order/get_not_paid",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Object> getNotPaidOrders(HttpServletRequest httpServletRequest) {
+        final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
+        if (login.isEmpty()) {
+            return new ResponseEntity<>(new ResponseMessageWrapper("Пользователь не авторизован"), HttpStatus.NOT_FOUND);
+        }
+        final List<OrderWithAddress> orders = orderWithAddressService.getNotPaidOrders(login);
+        return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
 }

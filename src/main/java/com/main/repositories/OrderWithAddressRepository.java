@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface OrderWithAddressRepository {
     List<OrderWithAddress> getPaidOrders(String login);
+    List<OrderWithAddress> getNotPaidOrders(String login);
 }
