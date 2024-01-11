@@ -27,7 +27,10 @@ public class OrderController {
     public ResponseEntity<Object> getPaidOrders(HttpServletRequest httpServletRequest) {
         final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
         if (login.isEmpty()) {
-            return new ResponseEntity<>(new ResponseMessageWrapper("Пользователь не авторизован"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Пользователь не авторизован"),
+                    HttpStatus.BAD_REQUEST
+            );
         }
         final List<OrderWithAddress> orders = orderWithAddressService.getPaidOrders(login);
         if (orders == null) {
@@ -46,7 +49,10 @@ public class OrderController {
     public ResponseEntity<Object> getNotPaidOrders(HttpServletRequest httpServletRequest) {
         final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
         if (login.isEmpty()) {
-            return new ResponseEntity<>(new ResponseMessageWrapper("Пользователь не авторизован"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Пользователь не авторизован"),
+                    HttpStatus.BAD_REQUEST
+            );
         }
         final List<OrderWithAddress> orders = orderWithAddressService.getNotPaidOrders(login);
         if (orders == null) {
