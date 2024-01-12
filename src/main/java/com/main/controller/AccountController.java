@@ -22,7 +22,7 @@ public class AccountController {
             path = "/api/account/get_balance",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Object> register(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Object> getBalance(HttpServletRequest httpServletRequest) {
         final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
         if (login.isEmpty()) {
             return new ResponseEntity<>(

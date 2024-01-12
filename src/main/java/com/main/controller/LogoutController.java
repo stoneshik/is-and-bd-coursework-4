@@ -19,7 +19,7 @@ public class LogoutController {
             path = "/api/logout",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<ResponseMessageWrapper> auth(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ResponseMessageWrapper> logout(HttpServletRequest httpServletRequest) {
         if (!authorizeHandler.logout(httpServletRequest)) {
             return new ResponseEntity<>(new ResponseMessageWrapper("Информация об входе не найдена"), HttpStatus.NOT_FOUND);
         }

@@ -1,13 +1,25 @@
 package com.main.controller;
 
+import com.main.ResponseMessageWrapper;
+import com.main.security.AuthorizeHandler;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
+@RequiredArgsConstructor
 public class RouterController {
+    private final AuthorizeHandler authorizeHandler;
     /* Страницы для неавторизованного пользователя */
     @GetMapping("/")
-    public String getHomeWithoutLoginPage() {
+    public String getHomeWithoutLoginPage(HttpServletRequest httpServletRequest) {
+        final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
+        if (!login.isEmpty()) {
+            return "redirect:/main";
+        }
         return "index";
     }
     @GetMapping("/login")
