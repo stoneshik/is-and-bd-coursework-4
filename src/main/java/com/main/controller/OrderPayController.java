@@ -53,6 +53,12 @@ public class OrderPayController {
     public ResponseEntity<Object> payOrders(
             HttpServletRequest httpServletRequest,
             @Valid @RequestBody List<OrderWithAddressDto> ordersDto) {
+        if (ordersDto.isEmpty()) {
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Передан пустой список заказов"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
         final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
         if (login.isEmpty()) {
             return new ResponseEntity<>(
@@ -105,6 +111,6 @@ public class OrderPayController {
                 );
             }
         }
-        return new ResponseEntity<>(orders, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessageWrapper("Оплата прошла успешно"), HttpStatus.OK);
     }
 }
