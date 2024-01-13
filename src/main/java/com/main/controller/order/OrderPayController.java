@@ -1,4 +1,4 @@
-package com.main.controller;
+package com.main.controller.order;
 
 import com.main.ResponseMessageWrapper;
 import com.main.dto.OrderWithAddressDto;
