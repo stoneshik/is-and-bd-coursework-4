@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class OrderController {
+public class GetOrderController {
     private final OrderWithAddressService orderWithAddressService;
     private final AuthorizeHandler authorizeHandler;
 

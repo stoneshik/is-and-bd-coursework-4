@@ -7,10 +7,12 @@ import java.math.BigDecimal;
 
 @Data
 public class BalanceEntity {
-    private final String userLogin;
-    private final BigDecimal accountBalance;
+    private Long accountId;
+    private String userLogin;
+    private BigDecimal accountBalance;
 
-    public BalanceEntity(String userLogin, BigDecimal accountBalance) {
+    public BalanceEntity(Long accountId, String userLogin, BigDecimal accountBalance) {
+        this.accountId = accountId;
         this.userLogin = userLogin;
         this.accountBalance = accountBalance;
     }

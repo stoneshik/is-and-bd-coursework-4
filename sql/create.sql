@@ -85,7 +85,7 @@ CREATE TYPE order_type_enum AS enum('print', 'scan');
 CREATE TYPE order_status_enum AS enum('not_paid', 'paid', 'completed');
 CREATE TABLE IF NOT EXISTS orders (
     order_id serial PRIMARY KEY,
-    account_id integer NOT NULL REFERENCES  accounts ON DELETE CASCADE,
+    account_id integer NOT NULL REFERENCES accounts ON DELETE CASCADE,
     vending_point_id integer NOT NULL REFERENCES vending_points ON DELETE CASCADE,
     order_amount numeric NOT NULL,
     order_datetime timestamp NOT NULL DEFAULT current_timestamp,
