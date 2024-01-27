@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface VendingPointRepository {
     List<VendingPointWithFunctionVariant> getAll();
+
+    List<VendingPointWithFunctionVariant> getPointsForPrint();
+
+    List<VendingPointWithFunctionVariant> getPointsForScan();
 }

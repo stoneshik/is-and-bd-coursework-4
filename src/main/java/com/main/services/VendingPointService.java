@@ -45,19 +45,10 @@ public class VendingPointService implements VendingPointRepository {
         }
     }
 
-
-    @Override
-    public List<VendingPointWithFunctionVariant> getAll() {
+    private List<VendingPointWithFunctionVariant> getAllPointsByQueryString(String queryString) {
         try {
             return jdbcTemplate.query(
-                    """
-                    SELECT
-                        vending_point_id,
-                        vending_point_address,
-                        vending_point_description,
-                        vending_point_number_machines,
-                        vending_point_cords
-                        FROM vending_points;""",
+                    queryString,
                     (rs, rowNum) -> {
                         final Long vendingPointId = rs.getLong("vending_point_id");
                         List<FunctionVariantEntity> functionVariants = getFunctionVariantsByVendingPointId(vendingPointId);
@@ -79,5 +70,52 @@ public class VendingPointService implements VendingPointRepository {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public List<VendingPointWithFunctionVariant> getAll() {
+        return getAllPointsByQueryString(
+            """
+            SELECT
+                vending_point_id,
+                vending_point_address,
+                vending_point_description,
+                vending_point_number_machines,
+                vending_point_cords
+                FROM vending_points;"""
+        );
+    }
+
+    @Override
+    public List<VendingPointWithFunctionVariant> getPointsForPrint() {
+        return getAllPointsByQueryString(
+                """
+                SELECT
+                    vending_points.vending_point_id,
+                    vending_point_address,
+                    vending_point_description,
+                    vending_point_number_machines,
+                    vending_point_cords FROM vending_points
+                    INNER JOIN function_variants
+                    ON function_variants.vending_point_id = vending_points.vending_point_id AND (
+                        function_variant = 'black_white_print' OR function_variant = 'color_print')
+                GROUP BY vending_points.vending_point_id;"""
+        );
+    }
+
+    @Override
+    public List<VendingPointWithFunctionVariant> getPointsForScan() {
+        return getAllPointsByQueryString(
+                """
+                SELECT
+                    vending_points.vending_point_id,
+                    vending_point_address,
+                    vending_point_description,
+                    vending_point_number_machines,
+                    vending_point_cords FROM vending_points
+                    INNER JOIN function_variants
+                    ON function_variants.vending_point_id = vending_points.vending_point_id AND function_variant = 'scan'
+                GROUP BY vending_points.vending_point_id;"""
+        );
     }
 }
