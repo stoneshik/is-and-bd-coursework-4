@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS vending_points (
     vending_point_address text NOT NULL,
     vending_point_description text NOT NULL,
     vending_point_number_machines integer NOT NULL,
-    vending_point_cords point NOT NULL
+    vending_point_cords decimal[] NOT NULL
 );
 CREATE TYPE day_week_enum AS enum('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
 CREATE TABLE IF NOT EXISTS vending_point_schedules (
