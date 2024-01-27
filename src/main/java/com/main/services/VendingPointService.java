@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Array;
 import java.util.List;
 
@@ -63,21 +64,16 @@ public class VendingPointService implements VendingPointRepository {
                         if (functionVariants == null) {
                             return null;
                         }
-                        Array vendingPointCords = rs.getArray("vending_point_cords");
-                        Double[] nullable = (Double[]) vendingPointCords.getArray();
-                        VendingPointWithFunctionVariant vendingPointWithFunctionVariant = new VendingPointWithFunctionVariant(
+                        Array rawVendingPointCords = rs.getArray("vending_point_cords");
+                        BigDecimal[] vendingPointCords = (BigDecimal[]) rawVendingPointCords.getArray();
+                        return new VendingPointWithFunctionVariant(
                                 vendingPointId,
                                 rs.getString("vending_point_address"),
                                 rs.getString("vending_point_description"),
                                 rs.getLong("vending_point_number_machines"),
-                                (double[]) rs.getArray("vending_point_cords")
+                                vendingPointCords,
+                                functionVariants
                         );
-                        List<FunctionVariantEntity> functionVariants = getFunctionVariantsByVendingPointId(vendingPointId);
-                        if (functionVariants == null) {
-                            return null;
-                        }
-                        vendingPointWithFunctionVariant.setFunctionVariants(functionVariants);
-                        return vendingPointWithFunctionVariant;
                     }
             );
         } catch (EmptyResultDataAccessException e) {

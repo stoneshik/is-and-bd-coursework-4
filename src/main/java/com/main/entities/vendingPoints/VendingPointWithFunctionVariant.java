@@ -2,6 +2,7 @@ package com.main.entities.vendingPoints;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -11,7 +12,7 @@ public class VendingPointWithFunctionVariant {
     private String vendingPointAddress;
     private String vendingPointDescription;
     private Long vendingPointNumberMachines;
-    private Double[] vendingPointCords;
+    private BigDecimal[] vendingPointCords;
     private List<FunctionVariantEntity> functionVariants;
 
     public VendingPointWithFunctionVariant(
@@ -19,20 +20,7 @@ public class VendingPointWithFunctionVariant {
             String vendingPointAddress,
             String vendingPointDescription,
             Long vendingPointNumberMachines,
-            Double[] vendingPointCords) {
-        this.vendingPointId = vendingPointId;
-        this.vendingPointAddress = vendingPointAddress;
-        this.vendingPointDescription = vendingPointDescription;
-        this.vendingPointNumberMachines = vendingPointNumberMachines;
-        this.vendingPointCords = vendingPointCords;
-    }
-
-    public VendingPointWithFunctionVariant(
-            Long vendingPointId,
-            String vendingPointAddress,
-            String vendingPointDescription,
-            Long vendingPointNumberMachines,
-            Double[] vendingPointCords,
+            BigDecimal[] vendingPointCords,
             List<FunctionVariantEntity> functionVariants) {
         this.vendingPointId = vendingPointId;
         this.vendingPointAddress = vendingPointAddress;
