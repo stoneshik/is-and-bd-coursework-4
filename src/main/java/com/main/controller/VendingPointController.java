@@ -18,7 +18,7 @@ public class VendingPointController {
     private final VendingPointService vendingPointService;
 
     @GetMapping(
-            path = "/api/vending_point/get_all",
+            path = "/api/open/vending_point/get_all",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Object> getAll() {
