@@ -6,9 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -75,13 +78,15 @@ public class OrderService implements OrderRepository {
     }
 
     @Override
-    public boolean createNewScanOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount) {
+    public Long createNewScanOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount) {
+        final Long WRONG_ID = -1L;
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("account_id", accountId);
             mapSqlParameterSource.addValue("vending_point_id", vendingPointId);
             mapSqlParameterSource.addValue("order_amount", orderAmount);
             mapSqlParameterSource.addValue("order_num", randomNumOrder());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
             int queryResult = jdbcTemplate.update(
                     """
                     INSERT INTO orders(
@@ -94,13 +99,25 @@ public class OrderService implements OrderRepository {
                         order_status,
                         order_num)
                     VALUES
-                        (default, :account_id, :vending_point_id, :order_amount, default, 'scan', 'not_paid', :order_num)
+                        (default, :account_id, :vending_point_id, :order_amount, default, 'scan', 'not_paid', :order_num);
                     """,
-                    mapSqlParameterSource
+                    mapSqlParameterSource,
+                    keyHolder
             );
-            return queryResult > 0;
+            if (queryResult <= 0) {
+                return WRONG_ID;
+            }
+            Map<String, Object> mapResults = keyHolder.getKeys();
+            if (mapResults == null || mapResults.isEmpty()) {
+                return WRONG_ID;
+            }
+            Long id = ((Number) mapResults.get("order_id")).longValue();
+            if (id < 0L) {
+                return WRONG_ID;
+            }
+            return id;
         } catch (EmptyResultDataAccessException e) {
-            return false;
+            return WRONG_ID;
         }
     }
 }

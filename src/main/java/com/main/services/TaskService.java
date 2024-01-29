@@ -1,0 +1,58 @@
+package com.main.services;
+
+import com.main.repositories.TaskRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class TaskService implements TaskRepository {
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Override
+    public Long findMachineIdForTaskScan(Long vendingPointId) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("vending_point_id", vendingPointId);
+            return jdbcTemplate.queryForObject(
+                    """
+                    SELECT machine_id FROM function_variants
+                    WHERE vending_point_id = :vending_point_id AND function_variant = 'scan' LIMIT 1;""",
+                    mapSqlParameterSource,
+                    (rs, rowNum) -> {
+                        return rs.getLong("machine_id");
+                    }
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean createTaskScan(Long orderId, Long machineId, Long scanTaskNumberPages) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("order_id", orderId);
+            mapSqlParameterSource.addValue("machine_id", machineId);
+            mapSqlParameterSource.addValue("scan_task_number_pages", scanTaskNumberPages);
+            int queryResult = jdbcTemplate.update(
+                    """
+                    INSERT INTO scan_tasks(
+                        scan_task_id,
+                        order_id,
+                        machine_id,
+                        scan_task_number_pages)
+                    VALUES
+                        (default, :order_id, :machine_id, :scan_task_number_pages);
+                    """,
+                    mapSqlParameterSource
+            );
+            return queryResult > 0;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+}

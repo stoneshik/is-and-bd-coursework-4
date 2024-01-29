@@ -6,6 +6,7 @@ import com.main.entities.account.BalanceEntity;
 import com.main.security.AuthorizeHandler;
 import com.main.services.AccountService;
 import com.main.services.OrderService;
+import com.main.services.TaskService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,10 @@ import java.math.BigDecimal;
 @RestController
 @RequiredArgsConstructor
 public class CreateOrderController {
+    private final AuthorizeHandler authorizeHandler;
     private final OrderService orderService;
     private final AccountService accountService;
-    private final AuthorizeHandler authorizeHandler;
+    private final TaskService taskService;
 
     private BigDecimal countAmountForOrderScan(OrderScanDto orderScanDto) {
         final double pagePrice = 0.5;
@@ -47,12 +49,28 @@ public class CreateOrderController {
         }
         final BigDecimal orderAmount = countAmountForOrderScan(orderScanDto);
         BalanceEntity balanceEntity = accountService.getBalance(login);
-        final boolean isCreated = orderService.createNewScanOrder(
+        final Long orderId = orderService.createNewScanOrder(
                 balanceEntity.getAccountId(),
                 orderScanDto.getVendingPointId(),
                 orderAmount
         );
-        if (!isCreated) {
+        if (orderId < 0L) {
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Не получилось создать новый заказ"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        Long machineId = taskService.findMachineIdForTaskScan(orderScanDto.getVendingPointId());
+        if (machineId == null) {
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Не получилось создать новый заказ"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        final boolean isCreatedTask = taskService.createTaskScan(
+                orderId, machineId, orderScanDto.getScanTaskNumberPages()
+        );
+        if (!isCreatedTask) {
             return new ResponseEntity<>(
                     new ResponseMessageWrapper("Не получилось создать новый заказ"),
                     HttpStatus.BAD_REQUEST

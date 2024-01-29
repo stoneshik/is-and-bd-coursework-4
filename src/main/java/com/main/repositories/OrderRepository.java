@@ -8,5 +8,5 @@ public interface OrderRepository {
     OrderEntity getById(Long accountId, Long orderId);
     boolean removeById(Long orderId);
 
-    boolean createNewScanOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount);
+    Long createNewScanOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount);
 }

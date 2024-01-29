@@ -18,7 +18,13 @@ VALUES
      'admin',
      '$2a$12$DMCQJpUCLrF.eByReybQXOeYjE1s3WdRWVAbAAe8Vapb1xr0DQ4zq',
      default,
-     'verified')
+     'verified'),
+    (default,
+     'aboba@mail.ru',
+     'aboba',
+     '$2a$12$v2z/WZexAqMuQyUWreqr1u.uy2.CM7I.EdhrMQMSIt5/vqBMdf/Tm',
+     default,
+     'unverified')
     ;
 -- Вендинговые точки
 INSERT INTO vending_points(
@@ -32,12 +38,12 @@ VALUES
      'Невский пр-кт, 2',
      'Находится рядом с банкоматом',
      2,
-     point(59.93716299256363, 30.313378213455664)),
+     '{59.93716299256363, 30.313378213455664}'),
     (1,
      'Комендантcкий пр-кт, 34',
      'Находится в подвале рядом с шаурмечной',
      1,
-     point(60.02097852901829, 30.242859111340625))
+     '{60.02097852901829, 30.242859111340625}')
     ;
 INSERT INTO vending_point_schedules(
     vending_point_schedule_id,
