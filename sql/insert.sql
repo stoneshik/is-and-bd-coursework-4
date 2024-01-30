@@ -26,6 +26,16 @@ VALUES
      default,
      'unverified')
     ;
+INSERT INTO replenishes(replenish_id, account_id, replenish_amount, replenish_datetime)
+VALUES
+    (default, 1, 120, default),
+    (default, 1, 220, default),
+    (default, 2, 750, default),
+    (default, 2, 200, default),
+    (default, 2, 170, default)
+    ;
+UPDATE accounts SET account_balance = 340 WHERE account_id = 1;
+UPDATE accounts SET account_balance = 1120 WHERE account_id = 2;
 -- Вендинговые точки
 INSERT INTO vending_points(
     vending_point_id,

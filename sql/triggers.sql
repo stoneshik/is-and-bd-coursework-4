@@ -1,4 +1,4 @@
-CREATE OR REPLACE function get_role_id_by_name(varchar(100))
+CREATE OR REPLACE FUNCTION get_role_id_by_name(varchar(100))
     RETURNS TABLE(role_id integer) AS $$
     SELECT role_id::integer FROM roles WHERE role_name = $1;
 $$ LANGUAGE sql;
