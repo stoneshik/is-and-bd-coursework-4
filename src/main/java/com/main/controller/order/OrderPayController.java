@@ -81,8 +81,8 @@ public class OrderPayController {
             amountOrders = amountOrders.add(order.getOrderAmount());
             orders.add(order);
         }
-        final BigDecimal accountBalance = balanceEntity.getAccountBalance().subtract(amountOrders);
-        if (accountBalance.compareTo(new BigDecimal("0.0")) < 0) {
+        final BigDecimal newAccountBalance = balanceEntity.getAccountBalance().subtract(amountOrders);
+        if (newAccountBalance.compareTo(new BigDecimal("0.0")) < 0) {
             return new ResponseEntity<>(
                     new ResponseMessageWrapper("Недостаточно средств на счете"),
                     HttpStatus.BAD_REQUEST
@@ -96,7 +96,7 @@ public class OrderPayController {
                 );
             }
         }
-        final boolean isUpdated = accountService.updateBalance(balanceEntity.getAccountId(), amountOrders);
+        final boolean isUpdated = accountService.updateBalance(balanceEntity.getAccountId(), newAccountBalance);
         if (!isUpdated) {
             return new ResponseEntity<>(
                     new ResponseMessageWrapper("Не получилось обновить баланс счета"),
