@@ -105,8 +105,6 @@ CREATE TABLE IF NOT EXISTS print_tasks (
     order_id integer NOT NULL REFERENCES orders ON DELETE CASCADE,
     machine_id integer NOT NULL REFERENCES machines ON DELETE CASCADE,
     print_task_color print_task_color_enum NOT NULL,
-    print_task_is_entire_document boolean NOT NULL,
-    print_task_selected_pages boolean[],
     print_task_number_copies int NOT NULL
 );
 -- Файлы
