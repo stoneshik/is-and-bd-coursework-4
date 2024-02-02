@@ -8,15 +8,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService implements TaskRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private static final Long WRONG_ID = -1L;
 
     private Long findMachineIdForTask(Long vendingPointId, String sqlString) {
         try {
@@ -34,13 +38,29 @@ public class TaskService implements TaskRepository {
         }
     }
 
-    private boolean createTaskPrint(Long orderId, Long machineId, String printTaskColor, Long printTaskNumberCopies) {
+    private Long getIdFromQueryResult(int queryResult, KeyHolder keyHolder) {
+        if (queryResult <= 0) {
+            return WRONG_ID;
+        }
+        Map<String, Object> mapResults = keyHolder.getKeys();
+        if (mapResults == null || mapResults.isEmpty()) {
+            return WRONG_ID;
+        }
+        Long id = ((Number) mapResults.get("order_id")).longValue();
+        if (id < 0L) {
+            return WRONG_ID;
+        }
+        return id;
+    }
+
+    private Long createTaskPrint(Long orderId, Long machineId, String printTaskColor, Long printTaskNumberCopies) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("order_id", orderId);
             mapSqlParameterSource.addValue("machine_id", machineId);
             mapSqlParameterSource.addValue("print_task_color", printTaskColor);
             mapSqlParameterSource.addValue("print_task_number_copies", printTaskNumberCopies);
+            KeyHolder keyHolder = new GeneratedKeyHolder();
             int queryResult = jdbcTemplate.update(
                     """
                     INSERT INTO print_tasks(
@@ -52,20 +72,22 @@ public class TaskService implements TaskRepository {
                     VALUES
                         (default, :order_id, :machine_id, :print_task_color, :print_task_number_copies);
                     """,
-                    mapSqlParameterSource
+                    mapSqlParameterSource,
+                    keyHolder
             );
-            return queryResult > 0;
+            return getIdFromQueryResult(queryResult, keyHolder);
         } catch (EmptyResultDataAccessException e) {
-            return false;
+            return WRONG_ID;
         }
     }
 
-    private boolean uploadFile(Long userId, MultipartFile file) {
+    private Long uploadFile(Long userId, MultipartFile file) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("user_id", userId);
             mapSqlParameterSource.addValue("file_name", file.getName());
             mapSqlParameterSource.addValue("file", file.getBytes());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
             int queryResult = jdbcTemplate.update(
                     """
                     INSERT INTO files(
@@ -81,11 +103,12 @@ public class TaskService implements TaskRepository {
                         default,
                         lo_from_bytea(0, :file));
                     """,
-                    mapSqlParameterSource
+                    mapSqlParameterSource,
+                    keyHolder
             );
-            return queryResult > 0;
+            return getIdFromQueryResult(queryResult, keyHolder);
         } catch (EmptyResultDataAccessException | IOException e) {
-            return false;
+            return WRONG_ID;
         }
     }
 
