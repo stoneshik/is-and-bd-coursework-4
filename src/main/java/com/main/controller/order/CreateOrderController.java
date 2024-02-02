@@ -156,7 +156,7 @@ public class CreateOrderController {
                     HttpStatus.BAD_REQUEST
             );
         }
-        Long machineId = taskService.findMachineIdForTaskPrint(orderScanDto.getVendingPointId());
+        Long machineId = taskService.findMachineIdForTaskPrint(orderPrintDto);
         if (machineId == null) {
             return new ResponseEntity<>(
                     new ResponseMessageWrapper("Не получилось создать новый заказ"),

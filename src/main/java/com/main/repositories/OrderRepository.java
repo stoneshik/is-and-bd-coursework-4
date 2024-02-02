@@ -9,4 +9,6 @@ public interface OrderRepository {
     boolean removeById(Long orderId);
 
     Long createNewScanOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount);
+
+    Long createNewPrintOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount);
 }

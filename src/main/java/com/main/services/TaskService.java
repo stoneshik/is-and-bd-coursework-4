@@ -1,5 +1,8 @@
 package com.main.services;
 
+import com.main.dto.FileDto;
+import com.main.dto.OrderPrintDto;
+import com.main.entities.task.PrintTaskColor;
 import com.main.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,15 +15,12 @@ import org.springframework.stereotype.Service;
 public class TaskService implements TaskRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Override
-    public Long findMachineIdForTaskScan(Long vendingPointId) {
+    private Long findMachineIdForTask(Long vendingPointId, String sqlString) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("vending_point_id", vendingPointId);
             return jdbcTemplate.queryForObject(
-                    """
-                    SELECT machine_id FROM function_variants
-                    WHERE vending_point_id = :vending_point_id AND function_variant = 'scan' LIMIT 1;""",
+                    sqlString,
                     mapSqlParameterSource,
                     (rs, rowNum) -> {
                         return rs.getLong("machine_id");
@@ -29,6 +29,57 @@ public class TaskService implements TaskRepository {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public Long findMachineIdForTaskScan(Long vendingPointId) {
+        return findMachineIdForTask(
+                vendingPointId,
+                """
+                SELECT machine_id FROM function_variants
+                    WHERE vending_point_id = :vending_point_id AND function_variant = 'scan' LIMIT 1;"""
+        );
+    }
+
+    @Override
+    public Long findMachineIdForTaskPrint(OrderPrintDto orderPrintDto) {
+        final Long vendingPointId = orderPrintDto.getVendingPointId();
+        boolean isHavingBlackWhitePrintInOrder = false;
+        boolean isHavingColorPrintInOrder = false;
+        for (FileDto fileDto : orderPrintDto.getFiles()) {
+            if (isHavingBlackWhitePrintInOrder && isHavingColorPrintInOrder) {
+                break;
+            }
+            if (fileDto.getTypePrint().equals(PrintTaskColor.BLACK_WHITE.getName())) {
+                isHavingBlackWhitePrintInOrder = true;
+            } else if (fileDto.getTypePrint().equals(PrintTaskColor.COLOR.getName())) {
+                isHavingColorPrintInOrder = true;
+            }
+        }
+        String sqlString;
+        if (!isHavingBlackWhitePrintInOrder && !isHavingColorPrintInOrder) {
+            return null;
+        } else if (isHavingBlackWhitePrintInOrder && isHavingColorPrintInOrder) {
+            sqlString = """
+                SELECT machine_id FROM function_variants
+                    WHERE vending_point_id = :vending_point_id
+                    AND function_variant = 'black_white'
+                    AND function_variant = 'color'
+                    LIMIT 1;""";
+        } else if (isHavingBlackWhitePrintInOrder) {
+            sqlString = """
+                SELECT machine_id FROM function_variants
+                    WHERE vending_point_id = :vending_point_id
+                    AND function_variant = 'black_white'
+                    LIMIT 1;""";
+        } else {
+            sqlString = """
+                SELECT machine_id FROM function_variants
+                    WHERE vending_point_id = :vending_point_id
+                    AND function_variant = 'color'
+                    LIMIT 1;""";
+        }
+        return findMachineIdForTask(vendingPointId, sqlString);
     }
 
     @Override

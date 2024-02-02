@@ -26,6 +26,50 @@ public class OrderService implements OrderRepository {
         return rn.nextLong(maximum - minimum + 1) + minimum;
     }
 
+    private Long createNewOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount, String orderType) {
+        final Long WRONG_ID = -1L;
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("account_id", accountId);
+            mapSqlParameterSource.addValue("vending_point_id", vendingPointId);
+            mapSqlParameterSource.addValue("order_amount", orderAmount);
+            mapSqlParameterSource.addValue("order_type", orderType);
+            mapSqlParameterSource.addValue("order_num", randomNumOrder());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            int queryResult = jdbcTemplate.update(
+                    """
+                    INSERT INTO orders(
+                        order_id,
+                        account_id,
+                        vending_point_id,
+                        order_amount,
+                        order_datetime,
+                        order_type,
+                        order_status,
+                        order_num)
+                    VALUES
+                        (default, :account_id, :vending_point_id, :order_amount, default, :order_type, 'not_paid', :order_num);
+                    """,
+                    mapSqlParameterSource,
+                    keyHolder
+            );
+            if (queryResult <= 0) {
+                return WRONG_ID;
+            }
+            Map<String, Object> mapResults = keyHolder.getKeys();
+            if (mapResults == null || mapResults.isEmpty()) {
+                return WRONG_ID;
+            }
+            Long id = ((Number) mapResults.get("order_id")).longValue();
+            if (id < 0L) {
+                return WRONG_ID;
+            }
+            return id;
+        } catch (EmptyResultDataAccessException e) {
+            return WRONG_ID;
+        }
+    }
+
     @Override
     public OrderEntity getById(Long accountId, Long orderId) {
         try {
@@ -79,45 +123,11 @@ public class OrderService implements OrderRepository {
 
     @Override
     public Long createNewScanOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount) {
-        final Long WRONG_ID = -1L;
-        try {
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
-            mapSqlParameterSource.addValue("account_id", accountId);
-            mapSqlParameterSource.addValue("vending_point_id", vendingPointId);
-            mapSqlParameterSource.addValue("order_amount", orderAmount);
-            mapSqlParameterSource.addValue("order_num", randomNumOrder());
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            int queryResult = jdbcTemplate.update(
-                    """
-                    INSERT INTO orders(
-                        order_id,
-                        account_id,
-                        vending_point_id,
-                        order_amount,
-                        order_datetime,
-                        order_type,
-                        order_status,
-                        order_num)
-                    VALUES
-                        (default, :account_id, :vending_point_id, :order_amount, default, 'scan', 'not_paid', :order_num);
-                    """,
-                    mapSqlParameterSource,
-                    keyHolder
-            );
-            if (queryResult <= 0) {
-                return WRONG_ID;
-            }
-            Map<String, Object> mapResults = keyHolder.getKeys();
-            if (mapResults == null || mapResults.isEmpty()) {
-                return WRONG_ID;
-            }
-            Long id = ((Number) mapResults.get("order_id")).longValue();
-            if (id < 0L) {
-                return WRONG_ID;
-            }
-            return id;
-        } catch (EmptyResultDataAccessException e) {
-            return WRONG_ID;
-        }
+        return createNewOrder(accountId, vendingPointId, orderAmount, "scan");
+    }
+
+    @Override
+    public Long createNewPrintOrder(Long accountId, Long vendingPointId, BigDecimal orderAmount) {
+        return createNewOrder(accountId, vendingPointId, orderAmount, "print");
     }
 }
