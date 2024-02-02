@@ -11,7 +11,7 @@ import java.io.File;
 public class FileDto {
     @NotNull
     @JsonProperty("file")
-    private byte[] file;
+    private File file;
     @NotNull
     @JsonProperty("typePrint")
     private String typePrint;

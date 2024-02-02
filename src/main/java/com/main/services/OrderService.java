@@ -48,7 +48,7 @@ public class OrderService implements OrderRepository {
                         order_status,
                         order_num)
                     VALUES
-                        (default, :account_id, :vending_point_id, :order_amount, default, :order_type, 'not_paid', :order_num);
+                        (default, :account_id, :vending_point_id, :order_amount, default, :order_type::order_type_enum, 'not_paid', :order_num);
                     """,
                     mapSqlParameterSource,
                     keyHolder
