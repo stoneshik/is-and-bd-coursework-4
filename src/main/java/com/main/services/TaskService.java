@@ -13,7 +13,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
 
@@ -82,12 +84,12 @@ public class TaskService implements TaskRepository {
         }
     }
 
-    private Long uploadFile(Long userId, MultipartFile file) {
+    private Long uploadFile(Long userId, File file) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("user_id", userId);
             mapSqlParameterSource.addValue("file_name", file.getName());
-            mapSqlParameterSource.addValue("file", file.getBytes());
+            mapSqlParameterSource.addValue("file", Files.readAllBytes(file.toPath()));
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int queryResult = jdbcTemplate.update(
                     """
