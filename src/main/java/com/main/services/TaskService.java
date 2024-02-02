@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -232,27 +233,20 @@ public class TaskService implements TaskRepository {
     }
 
     @Override
-    public boolean createTasksPrint(Long orderId, Long machineId, OrderPrintDto orderPrintDto) {
-        try {
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
-            mapSqlParameterSource.addValue("order_id", orderId);
-            mapSqlParameterSource.addValue("machine_id", machineId);
-            mapSqlParameterSource.addValue("scan_task_number_pages", scanTaskNumberPages);
-            int queryResult = jdbcTemplate.update(
-                    """
-                    INSERT INTO scan_tasks(
-                        scan_task_id,
-                        order_id,
-                        machine_id,
-                        scan_task_number_pages)
-                    VALUES
-                        (default, :order_id, :machine_id, :scan_task_number_pages);
-                    """,
-                    mapSqlParameterSource
-            );
-            return queryResult > 0;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
+    public boolean createTasksPrint(Long orderId, Long machineId, OrderPrintDto orderPrintDto, Long userId) {
+        for (FileDto fileDto: orderPrintDto.getFiles()) {
+            Long printTaskId = createTaskPrint(orderId, machineId, fileDto.getTypePrint(), fileDto.getNumberCopies());
+            if (Objects.equals(printTaskId, WRONG_ID)) {
+                return false;
+            }
+            Long fileId = uploadFile(userId, fileDto.getFile());
+            if (Objects.equals(fileId, WRONG_ID)) {
+                return false;
+            }
+            if (!createConnectionsForTaskPrint(fileId, machineId, printTaskId)) {
+                return false;
+            }
         }
+        return true;
     }
 }

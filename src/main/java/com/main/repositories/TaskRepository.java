@@ -8,4 +8,6 @@ public interface TaskRepository {
     Long findMachineIdForTaskPrint(OrderPrintDto orderPrintDto);
 
     boolean createTaskScan(Long orderId, Long machineId, Long scanTaskNumberPages);
+
+    boolean createTasksPrint(Long orderId, Long machineId, OrderPrintDto orderPrintDto, Long userId);
 }

@@ -6,10 +6,12 @@ import com.main.dto.OrderPrintDto;
 import com.main.dto.OrderScanDto;
 import com.main.entities.account.BalanceEntity;
 import com.main.entities.task.PrintTaskColor;
+import com.main.entities.user.UserEntity;
 import com.main.security.AuthorizeHandler;
 import com.main.services.AccountService;
 import com.main.services.OrderService;
 import com.main.services.TaskService;
+import com.main.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class CreateOrderController {
     private final AuthorizeHandler authorizeHandler;
     private final OrderService orderService;
     private final AccountService accountService;
+    private final UserService userService;
     private final TaskService taskService;
 
     private BigDecimal countAmountForOrderScan(OrderScanDto orderScanDto) {
@@ -142,6 +145,13 @@ public class CreateOrderController {
                     HttpStatus.BAD_REQUEST
             );
         }
+        UserEntity user = userService.findByLogin(login);
+        if (user == null) {
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Пользователь не найден"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
         if (!checkTypeAndSizeAllFiles(orderPrintDto)) {
             return new ResponseEntity<>(
                     new ResponseMessageWrapper("Передан файл не подходящего типа, либо размера"),
@@ -169,7 +179,7 @@ public class CreateOrderController {
             );
         }
         final boolean isCreatedTask = taskService.createTasksPrint(
-                orderId, machineId, orderPrintDto
+                orderId, machineId, orderPrintDto, user.getUserId()
         );
         if (!isCreatedTask) {
             return new ResponseEntity<>(
