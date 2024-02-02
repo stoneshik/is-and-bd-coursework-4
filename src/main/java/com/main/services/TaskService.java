@@ -188,8 +188,7 @@ public class TaskService implements TaskRepository {
             sqlString = """
                 SELECT machine_id FROM function_variants
                     WHERE vending_point_id = :vending_point_id
-                    AND function_variant = 'black_white'
-                    AND function_variant = 'color'
+                    AND (function_variant = 'black_white' OR function_variant = 'color')
                     LIMIT 1;""";
         } else if (isHavingBlackWhitePrintInOrder) {
             sqlString = """
