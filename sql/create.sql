@@ -112,7 +112,6 @@ CREATE TABLE IF NOT EXISTS files (
     file_id serial PRIMARY KEY,
     user_id integer NOT NULL REFERENCES users ON DELETE CASCADE,
     file_name varchar(200) NOT NULL,
-    file_number_pages integer NOT NULL,
     file_load_datetime timestamp NOT NULL DEFAULT current_timestamp,
     file_oid oid NOT NULL
 );

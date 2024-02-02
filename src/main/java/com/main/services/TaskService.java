@@ -9,6 +9,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,104 @@ public class TaskService implements TaskRepository {
             );
         } catch (EmptyResultDataAccessException e) {
             return null;
+        }
+    }
+
+    private boolean createTaskPrint(Long orderId, Long machineId, String printTaskColor, Long printTaskNumberCopies) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("order_id", orderId);
+            mapSqlParameterSource.addValue("machine_id", machineId);
+            mapSqlParameterSource.addValue("print_task_color", printTaskColor);
+            mapSqlParameterSource.addValue("print_task_number_copies", printTaskNumberCopies);
+            int queryResult = jdbcTemplate.update(
+                    """
+                    INSERT INTO print_tasks(
+                        print_task_id,
+                        order_id,
+                        machine_id,
+                        print_task_color,
+                        print_task_number_copies)
+                    VALUES
+                        (default, :order_id, :machine_id, :print_task_color, :print_task_number_copies);
+                    """,
+                    mapSqlParameterSource
+            );
+            return queryResult > 0;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    private boolean uploadFile(Long userId, MultipartFile file) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("user_id", userId);
+            mapSqlParameterSource.addValue("file_name", file.getName());
+            mapSqlParameterSource.addValue("file", file.getBytes());
+            int queryResult = jdbcTemplate.update(
+                    """
+                    INSERT INTO files(
+                        file_id,
+                        user_id,
+                        file_name,
+                        file_load_datetime,
+                        file_oid)
+                    VALUES
+                        (default,
+                        :user_id,
+                        :file_name,
+                        default,
+                        lo_from_bytea(0, :file));
+                    """,
+                    mapSqlParameterSource
+            );
+            return queryResult > 0;
+        } catch (EmptyResultDataAccessException | IOException e) {
+            return false;
+        }
+    }
+
+    private boolean createConnectionsForTaskPrint(Long fileId, Long machineId, Long printTaskId) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("print_task_id", printTaskId);
+            mapSqlParameterSource.addValue("file_id", fileId);
+            int queryResult = jdbcTemplate.update(
+                    """
+                    INSERT INTO print_task_files(
+                        print_task_file_id,
+                        print_task_id,
+                        file_id)
+                    VALUES
+                        (default, :print_task_id, :file_id);
+                    """,
+                    mapSqlParameterSource
+            );
+            if (queryResult <= 0) {
+                return false;
+            }
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("machine_id", machineId);
+            mapSqlParameterSource.addValue("file_id", fileId);
+            int queryResult = jdbcTemplate.update(
+                    """
+                    INSERT INTO machine_files(
+                        machine_file_id,
+                        machine_id,
+                        file_id)
+                    VALUES
+                        (default, :machine_id, :file_id);
+                    """,
+                    mapSqlParameterSource
+            );
+            return queryResult > 0;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
         }
     }
 
@@ -84,6 +185,31 @@ public class TaskService implements TaskRepository {
 
     @Override
     public boolean createTaskScan(Long orderId, Long machineId, Long scanTaskNumberPages) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("order_id", orderId);
+            mapSqlParameterSource.addValue("machine_id", machineId);
+            mapSqlParameterSource.addValue("scan_task_number_pages", scanTaskNumberPages);
+            int queryResult = jdbcTemplate.update(
+                    """
+                    INSERT INTO scan_tasks(
+                        scan_task_id,
+                        order_id,
+                        machine_id,
+                        scan_task_number_pages)
+                    VALUES
+                        (default, :order_id, :machine_id, :scan_task_number_pages);
+                    """,
+                    mapSqlParameterSource
+            );
+            return queryResult > 0;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean createTasksPrint(Long orderId, Long machineId, OrderPrintDto orderPrintDto) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("order_id", orderId);

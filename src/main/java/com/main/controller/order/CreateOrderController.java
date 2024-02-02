@@ -68,6 +68,11 @@ public class CreateOrderController {
             if (file.getSize() > maxSize) {
                 return false;
             }
+            final String typePrint = fileDto.getTypePrint();
+            if (!typePrint.equals(PrintTaskColor.BLACK_WHITE.getName()) &&
+                    !typePrint.equals(PrintTaskColor.COLOR.getName())) {
+                return false;
+            }
         }
         return true;
     }
@@ -163,8 +168,8 @@ public class CreateOrderController {
                     HttpStatus.BAD_REQUEST
             );
         }
-        final boolean isCreatedTask = taskService.createTaskPrint(
-                orderId, machineId, orderScanDto.getScanTaskNumberPages()
+        final boolean isCreatedTask = taskService.createTasksPrint(
+                orderId, machineId, orderPrintDto
         );
         if (!isCreatedTask) {
             return new ResponseEntity<>(
