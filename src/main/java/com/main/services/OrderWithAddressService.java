@@ -3,7 +3,6 @@ package com.main.services;
 import com.main.entities.order.OrderWithAddress;
 import com.main.repositories.OrderWithAddressRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

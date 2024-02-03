@@ -1,7 +1,6 @@
 package com.main.entities.file;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 

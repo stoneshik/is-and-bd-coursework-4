@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface FileRepository {
     List<FileInfoEntity> getFilesByOrderId(Long orderId);
+
+    List<FileInfoEntity> getFilesAttachedPrintOrder(Long userId);
+
+    List<FileInfoEntity> getFilesAttachedScanOrder(Long userId);
 }
