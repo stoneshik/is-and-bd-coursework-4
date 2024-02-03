@@ -32,7 +32,17 @@ public class RegistrationController {
         final String password = passwordEncoder.encode(registerDto.getPassword());
         UserEntity userEntity = userService.findByLogin(login);
         if (userEntity != null) {
-            return new ResponseEntity<>(new ResponseMessageWrapper("Пользователь с таким логином уже существует"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Пользователь с таким логином уже существует"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        UserEntity userEntityByEmail = userService.findByEmail(email);
+        if (userEntityByEmail != null) {
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Пользователь с такой почтой уже существует"),
+                    HttpStatus.BAD_REQUEST
+            );
         }
         if (userService.create(email, login, password) == 0) {
             return new ResponseEntity<>(new ResponseMessageWrapper("Не получилось создать пользователя"), HttpStatus.BAD_REQUEST);

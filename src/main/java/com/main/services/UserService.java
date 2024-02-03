@@ -17,10 +17,10 @@ public class UserService implements UserRepository {
     public int create(String email, String login, String password) {
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
         mapSqlParameterSource.addValue("email", email);
-        mapSqlParameterSource.addValue("login", email);
-        mapSqlParameterSource.addValue("password", email);
+        mapSqlParameterSource.addValue("login", login);
+        mapSqlParameterSource.addValue("password", password);
         return jdbcTemplate.update(
-                "insert into users values(default, :email, :login, :password, default, default)",
+                "insert into users values(default, :email, :login, :password, default, default);",
                 mapSqlParameterSource
         );
     }
@@ -31,7 +31,31 @@ public class UserService implements UserRepository {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("login", login);
             return jdbcTemplate.queryForObject(
-                    "select * from users where user_login = :login",
+                    "select * from users where user_login = :login;",
+                    mapSqlParameterSource,
+                    (rs, rowNum) -> {
+                        return new UserEntity(
+                                rs.getLong("user_id"),
+                                rs.getString("user_email"),
+                                rs.getString("user_login"),
+                                rs.getString("user_password_hash"),
+                                rs.getDate("user_created_datetime"),
+                                rs.getString("user_status")
+                        );
+                    }
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public UserEntity findByEmail(String email) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("email", email);
+            return jdbcTemplate.queryForObject(
+                    "select * from users where user_email = :email;",
                     mapSqlParameterSource,
                     (rs, rowNum) -> {
                         return new UserEntity(
@@ -55,7 +79,7 @@ public class UserService implements UserRepository {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("login", login);
             return jdbcTemplate.queryForObject(
-                    "select * from users where user_login = :login",
+                    "select * from users where user_login = :login;",
                     mapSqlParameterSource,
                     (rs, rowNum) -> {
                         return rs.getLong("user_id");

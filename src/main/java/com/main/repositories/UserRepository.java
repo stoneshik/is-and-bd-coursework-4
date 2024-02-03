@@ -7,5 +7,7 @@ public interface UserRepository {
     int create(String email, String login, String password);
     UserEntity findByLogin(String login);
 
+    UserEntity findByEmail(String email);
+
     Long getUserIdByLogin(String login);
 }
