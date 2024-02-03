@@ -87,8 +87,8 @@ public class CreateOrderPrintController {
                     HttpStatus.BAD_REQUEST
             );
         }
-        UserEntity user = userService.findByLogin(login);
-        if (user == null) {
+        Long userId = userService.getUserIdByLogin(login);
+        if (userId == null) {
             return new ResponseEntity<>(
                     new ResponseMessageWrapper("Пользователь не найден"),
                     HttpStatus.BAD_REQUEST
@@ -121,7 +121,7 @@ public class CreateOrderPrintController {
             );
         }
         final boolean isCreatedTask = taskService.createTasksPrint(
-                orderId, machineId, orderPrintDto, user.getUserId()
+                orderId, machineId, orderPrintDto, userId
         );
         if (!isCreatedTask) {
             return new ResponseEntity<>(

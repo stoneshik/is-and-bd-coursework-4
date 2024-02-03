@@ -1,4 +1,4 @@
-package com.main.controller.order;
+package com.main.controller.order.get;
 
 import com.main.ResponseMessageWrapper;
 import com.main.entities.order.OrderStatus;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetOrderController {
+public class GetOrdersController {
     private final OrderWithAddressService orderWithAddressService;
     private final AuthorizeHandler authorizeHandler;
 

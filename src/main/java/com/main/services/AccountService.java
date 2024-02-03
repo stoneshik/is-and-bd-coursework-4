@@ -16,6 +16,27 @@ public class AccountService implements AccountRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
+    public Long getAccountId(String login) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("login", login);
+            return jdbcTemplate.queryForObject(
+                    """
+                    SELECT accounts.account_id FROM accounts
+                        INNER JOIN users AS a
+                        ON accounts.account_id = a.user_id
+                    WHERE a.user_login = :login;""",
+                    mapSqlParameterSource,
+                    (rs, rowNum) -> {
+                        return rs.getLong("account_id");
+                    }
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     public BalanceEntity getBalance(String login) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();

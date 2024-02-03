@@ -48,4 +48,21 @@ public class UserService implements UserRepository {
             return null;
         }
     }
+
+    @Override
+    public Long getUserIdByLogin(String login) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("login", login);
+            return jdbcTemplate.queryForObject(
+                    "select * from users where user_login = :login",
+                    mapSqlParameterSource,
+                    (rs, rowNum) -> {
+                        return rs.getLong("user_id");
+                    }
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }
