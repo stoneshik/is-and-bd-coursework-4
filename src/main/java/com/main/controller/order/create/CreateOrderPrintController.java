@@ -36,14 +36,16 @@ public class CreateOrderPrintController {
         final double pagePriceForBlackWhite = 7.0;
         final double pagePriceForColor = 15.0;
         BigDecimal amount = new BigDecimal(0);
-        for (TaskPrintDto fileDto : orderPrintDto.getFiles()) {
+        for (TaskPrintDto taskPrintDto : orderPrintDto.getFiles()) {
             double pagePrice;
-            if (fileDto.getTypePrint().equals(PrintTaskColor.BLACK_WHITE.getName())) {
+            if (taskPrintDto.getTypePrint().equals(PrintTaskColor.BLACK_WHITE.getName())) {
                 pagePrice = pagePriceForBlackWhite;
             } else {
                 pagePrice = pagePriceForColor;
             }
-            amount = amount.add(new BigDecimal(pagePrice));
+            amount = amount.add(
+                    new BigDecimal(pagePrice).multiply(new BigDecimal(taskPrintDto.getNumberCopies()))
+            );
         }
         return amount;
     }
