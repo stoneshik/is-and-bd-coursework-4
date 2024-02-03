@@ -1,24 +1,37 @@
 package com.main.controller.order.get;
 
 import com.main.ResponseMessageWrapper;
+import com.main.entities.file.FileInfoEntity;
+import com.main.entities.order.OrderPrintWithFilesInfoEntity;
 import com.main.entities.order.OrderWithAddress;
 import com.main.security.AuthorizeHandler;
+import com.main.services.FileService;
 import com.main.services.OrderWithAddressService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class GetOrderController {
     private final OrderWithAddressService orderWithAddressService;
+    private final FileService fileService;
     private final AuthorizeHandler authorizeHandler;
 
-    private ResponseEntity<Object> getOrderById(
+    @GetMapping(
+            path = "/api/order/get_print/{orderId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    private ResponseEntity<Object> getOrderPrintById(
             HttpServletRequest httpServletRequest,
-            Long orderId) {
+            @PathVariable Long orderId) {
         final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
         if (login.isEmpty()) {
             return new ResponseEntity<>(
@@ -33,6 +46,14 @@ public class GetOrderController {
                     HttpStatus.BAD_REQUEST
             );
         }
-        return new ResponseEntity<>(order, HttpStatus.OK);
+        List<FileInfoEntity> files = fileService.getFilesByOrderId(order.getOrderId());
+        if (files == null) {
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Не получилось получить информацию о файлах приложенных к заказу"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        OrderPrintWithFilesInfoEntity ordersInfo = new OrderPrintWithFilesInfoEntity(order, files);
+        return new ResponseEntity<>(ordersInfo, HttpStatus.OK);
     }
 }
