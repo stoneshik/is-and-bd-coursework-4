@@ -1,6 +1,7 @@
 package com.main.services;
 
 import com.main.entities.file.FileInfoEntity;
+import com.main.entities.file.FileWithContentEntity;
 import com.main.repositories.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,6 +15,53 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileService implements FileRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Override
+    public FileWithContentEntity getFileById(Long userId, Long fileId) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("user_id", userId);
+            mapSqlParameterSource.addValue("file_id", fileId);
+            return jdbcTemplate.queryForObject(
+                    """
+                    SELECT file_id,
+                           user_id,
+                           file_name,
+                           file_load_datetime,
+                           file_oid FROM files
+                    WHERE user_id = :user_id AND file_id = :file_id;""",
+                    mapSqlParameterSource,
+                    (rs, rowNum) -> {
+                        return new FileWithContentEntity(
+                                rs.getLong("file_id"),
+                                rs.getLong("user_id"),
+                                rs.getString("file_name"),
+                                rs.getDate("file_load_datetime"),
+                                rs.getLong("file_oid")
+                        );
+                    }
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public byte[] loadFileByOid(Long oid) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("oid", oid);
+            return jdbcTemplate.queryForObject(
+                    "SELECT lo_get(:oid);",
+                    mapSqlParameterSource,
+                    (rs, rowNum) -> {
+                        return rs.getBytes("lo_get");
+                    }
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return new byte[]{};
+        }
+    }
 
     @Override
     public List<FileInfoEntity> getFilesByOrderId(Long orderId) {

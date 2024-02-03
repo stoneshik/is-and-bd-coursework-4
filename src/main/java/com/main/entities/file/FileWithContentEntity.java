@@ -10,17 +10,17 @@ public class FileWithContentEntity {
     private Long userId;
     private String fileName;
     private Date fileLoadDatetime;
-    private byte[] fileBlob;
+    private Long fileOid;
     public FileWithContentEntity(
             Long fileId,
             Long userId,
             String fileName,
             Date fileLoadDatetime,
-            byte[] fileBlob) {
+            Long fileOid) {
         this.fileId = fileId;
         this.userId = userId;
         this.fileName = fileName;
         this.fileLoadDatetime = fileLoadDatetime;
-        this.fileBlob = fileBlob;
+        this.fileOid = fileOid;
     }
 }
