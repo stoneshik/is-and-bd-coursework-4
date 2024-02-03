@@ -1,6 +1,6 @@
 package com.main.services.task;
 
-import com.main.dto.FileDto;
+import com.main.dto.TaskPrintDto;
 import com.main.dto.OrderPrintDto;
 import com.main.entities.task.PrintTaskColor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,9 +10,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,7 +21,7 @@ public class TaskPrintService extends TaskService {
         super(jdbcTemplate);
     }
 
-    private Long getIdFromQueryResult(int queryResult, KeyHolder keyHolder) {
+    private Long getIdFromQueryResult(int queryResult, KeyHolder keyHolder, String idString) {
         if (queryResult <= 0) {
             return WRONG_ID;
         }
@@ -32,7 +29,7 @@ public class TaskPrintService extends TaskService {
         if (mapResults == null || mapResults.isEmpty()) {
             return WRONG_ID;
         }
-        Long id = ((Number) mapResults.get("order_id")).longValue();
+        Long id = ((Number) mapResults.get(idString)).longValue();
         if (id < 0L) {
             return WRONG_ID;
         }
@@ -56,23 +53,23 @@ public class TaskPrintService extends TaskService {
                         print_task_color,
                         print_task_number_copies)
                     VALUES
-                        (default, :order_id, :machine_id, :print_task_color, :print_task_number_copies);
+                        (default, :order_id, :machine_id, :print_task_color::print_task_color_enum, :print_task_number_copies);
                     """,
                     mapSqlParameterSource,
                     keyHolder
             );
-            return getIdFromQueryResult(queryResult, keyHolder);
+            return getIdFromQueryResult(queryResult, keyHolder, "print_task_id");
         } catch (EmptyResultDataAccessException e) {
             return WRONG_ID;
         }
     }
 
-    private Long uploadFile(Long userId, File file) {
+    private Long uploadFile(Long userId, TaskPrintDto taskPrintDto) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("user_id", userId);
-            mapSqlParameterSource.addValue("file_name", file.getName());
-            mapSqlParameterSource.addValue("file", Files.readAllBytes(file.toPath()));
+            mapSqlParameterSource.addValue("file_name", taskPrintDto.getName());
+            mapSqlParameterSource.addValue("file", taskPrintDto.getBlob());
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int queryResult = jdbcTemplate.update(
                     """
@@ -92,8 +89,8 @@ public class TaskPrintService extends TaskService {
                     mapSqlParameterSource,
                     keyHolder
             );
-            return getIdFromQueryResult(queryResult, keyHolder);
-        } catch (EmptyResultDataAccessException | IOException e) {
+            return getIdFromQueryResult(queryResult, keyHolder, "file_id");
+        } catch (EmptyResultDataAccessException e) {
             return WRONG_ID;
         }
     }
@@ -145,7 +142,7 @@ public class TaskPrintService extends TaskService {
         final Long vendingPointId = orderPrintDto.getVendingPointId();
         boolean isHavingBlackWhitePrintInOrder = false;
         boolean isHavingColorPrintInOrder = false;
-        for (FileDto fileDto : orderPrintDto.getFiles()) {
+        for (TaskPrintDto fileDto : orderPrintDto.getFiles()) {
             if (isHavingBlackWhitePrintInOrder && isHavingColorPrintInOrder) {
                 break;
             }
@@ -162,31 +159,31 @@ public class TaskPrintService extends TaskService {
             sqlString = """
                 SELECT machine_id FROM function_variants
                     WHERE vending_point_id = :vending_point_id
-                    AND (function_variant = 'black_white' OR function_variant = 'color')
+                    AND (function_variant::function_variant_enum = 'black_white_print' OR function_variant::function_variant_enum = 'color_print')
                     LIMIT 1;""";
         } else if (isHavingBlackWhitePrintInOrder) {
             sqlString = """
                 SELECT machine_id FROM function_variants
                     WHERE vending_point_id = :vending_point_id
-                    AND function_variant = 'black_white'
+                    AND function_variant::function_variant_enum = 'black_white_print'
                     LIMIT 1;""";
         } else {
             sqlString = """
                 SELECT machine_id FROM function_variants
                     WHERE vending_point_id = :vending_point_id
-                    AND function_variant = 'color'
+                    AND function_variant::function_variant_enum = 'color_print'
                     LIMIT 1;""";
         }
         return findMachineIdForTask(vendingPointId, sqlString);
     }
 
     public boolean createTasksPrint(Long orderId, Long machineId, OrderPrintDto orderPrintDto, Long userId) {
-        for (FileDto fileDto: orderPrintDto.getFiles()) {
+        for (TaskPrintDto fileDto: orderPrintDto.getFiles()) {
             Long printTaskId = createTaskPrint(orderId, machineId, fileDto.getTypePrint(), fileDto.getNumberCopies());
             if (Objects.equals(printTaskId, WRONG_ID)) {
                 return false;
             }
-            Long fileId = uploadFile(userId, fileDto.getFile());
+            Long fileId = uploadFile(userId, fileDto);
             if (Objects.equals(fileId, WRONG_ID)) {
                 return false;
             }

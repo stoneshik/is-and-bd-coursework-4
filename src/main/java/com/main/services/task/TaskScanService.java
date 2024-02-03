@@ -16,7 +16,7 @@ public class TaskScanService extends TaskService {
                 vendingPointId,
                 """
                 SELECT machine_id FROM function_variants
-                    WHERE vending_point_id = :vending_point_id AND function_variant = 'scan' LIMIT 1;"""
+                    WHERE vending_point_id = :vending_point_id AND function_variant::function_variant_enum = 'scan' LIMIT 1;"""
         );
     }
 

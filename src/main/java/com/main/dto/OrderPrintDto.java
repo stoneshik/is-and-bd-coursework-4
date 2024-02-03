@@ -12,6 +12,6 @@ public class OrderPrintDto {
     @JsonProperty("vendingPointId")
     private Long vendingPointId;
     @NotNull
-    @JsonProperty("files")
-    private List<FileDto> files;
+    @JsonProperty("tasksPrint")
+    private List<TaskPrintDto> files;
 }

@@ -1,7 +1,7 @@
 package com.main.controller.order.create;
 
 import com.main.ResponseMessageWrapper;
-import com.main.dto.FileDto;
+import com.main.dto.TaskPrintDto;
 import com.main.dto.OrderPrintDto;
 import com.main.entities.account.BalanceEntity;
 import com.main.entities.task.PrintTaskColor;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
 import java.math.BigDecimal;
 
 @RestController
@@ -37,7 +36,7 @@ public class CreateOrderPrintController {
         final double pagePriceForBlackWhite = 7.0;
         final double pagePriceForColor = 15.0;
         BigDecimal amount = new BigDecimal(0);
-        for (FileDto fileDto : orderPrintDto.getFiles()) {
+        for (TaskPrintDto fileDto : orderPrintDto.getFiles()) {
             double pagePrice;
             if (fileDto.getTypePrint().equals(PrintTaskColor.BLACK_WHITE.getName())) {
                 pagePrice = pagePriceForBlackWhite;
@@ -53,16 +52,12 @@ public class CreateOrderPrintController {
         final String MIME_IMAGE_JPEG = "image/jpeg";
         final String MIME_IMAGE_PNG = "image/png";
         final long maxSize = 10485760; // 10 мб в байтах
-        for (FileDto fileDto : orderPrintDto.getFiles()) {
-            final File file = fileDto.getFile();
-            if (file == null) {
+        for (TaskPrintDto fileDto : orderPrintDto.getFiles()) {
+            final String contentType = fileDto.getType();
+            if (contentType == null || (!contentType.equals(MIME_IMAGE_JPEG) && !contentType.equals(MIME_IMAGE_PNG))) {
                 return false;
             }
-            //final String contentType = file.getContentType();
-            //if (contentType == null || (!contentType.equals(MIME_IMAGE_JPEG) && !contentType.equals(MIME_IMAGE_PNG))) {
-            //    return false;
-            //}
-            if (file.length() > maxSize) {
+            if (fileDto.getBlob().length > maxSize) {
                 return false;
             }
             final String typePrint = fileDto.getTypePrint();
