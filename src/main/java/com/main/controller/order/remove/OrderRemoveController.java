@@ -7,6 +7,7 @@ import com.main.entities.order.OrderEntity;
 import com.main.entities.order.OrderStatus;
 import com.main.security.AuthorizeHandler;
 import com.main.services.AccountService;
+import com.main.services.FileService;
 import com.main.services.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderRemoveController {
     private final OrderService orderService;
     private final AccountService accountService;
+    private final FileService fileService;
     private final AuthorizeHandler authorizeHandler;
 
     private OrderRemoveStrategy switchOrderRemoveStrategy(OrderStatus orderStatus) {
         OrderRemoveStrategy orderRemoveStrategy;
         switch (orderStatus) {
-            case PAID -> orderRemoveStrategy = new OrderPaidRemoveStrategy(orderService, accountService);
-            case NOT_PAID -> orderRemoveStrategy = new OrderNotPaidRemoveStrategy(orderService);
+            case PAID -> orderRemoveStrategy = new OrderPaidRemoveStrategy(orderService, accountService, fileService);
+            case NOT_PAID -> orderRemoveStrategy = new OrderNotPaidRemoveStrategy(orderService, fileService);
             case COMPLETED -> orderRemoveStrategy = new OrderCompletedRemoveStrategy();
             default -> orderRemoveStrategy = null;
         }

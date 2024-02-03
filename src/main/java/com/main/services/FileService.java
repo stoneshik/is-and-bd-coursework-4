@@ -50,6 +50,31 @@ public class FileService implements FileRepository {
     }
 
     @Override
+    public boolean removeFilesByOrderId(Long orderId) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("order_id", orderId);
+            int queryResult = jdbcTemplate.update(
+                    """
+                    DELETE FROM files
+                    WHERE files.file_id in
+                        (SELECT files.file_id FROM files
+                            INNER JOIN print_task_files
+                                INNER JOIN print_tasks
+                                    INNER JOIN orders
+                                    ON orders.order_id = :order_id
+                                ON orders.order_id = print_tasks.order_id
+                            ON print_task_files.print_task_id = print_tasks.print_task_id
+                        WHERE files.file_id = print_task_files.file_id);""",
+                    mapSqlParameterSource
+            );
+            return queryResult > 0;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
     public List<FileInfoEntity> getFilesAttachedPrintOrder(Long userId) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
