@@ -3,6 +3,7 @@ package com.main.services.task;
 import com.main.dto.OrderPrintDto;
 import com.main.dto.TaskPrintDto;
 import com.main.entities.task.PrintTaskColor;
+import com.main.repositories.TaskPrintRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,7 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-public class TaskPrintService extends TaskService {
+public class TaskPrintService extends TaskService implements TaskPrintRepository {
     private static final Long WRONG_ID = -1L;
 
     public TaskPrintService(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -138,6 +139,7 @@ public class TaskPrintService extends TaskService {
         }
     }
 
+    @Override
     public Long findMachineIdForTaskPrint(OrderPrintDto orderPrintDto) {
         final Long vendingPointId = orderPrintDto.getVendingPointId();
         boolean isHavingBlackWhitePrintInOrder = false;
@@ -177,6 +179,7 @@ public class TaskPrintService extends TaskService {
         return findMachineIdForTask(vendingPointId, sqlString);
     }
 
+    @Override
     public boolean createTasksPrint(Long orderId, Long machineId, OrderPrintDto orderPrintDto, Long userId) {
         for (TaskPrintDto fileDto: orderPrintDto.getFiles()) {
             Long printTaskId = createTaskPrint(orderId, machineId, fileDto.getTypePrint(), fileDto.getNumberCopies());

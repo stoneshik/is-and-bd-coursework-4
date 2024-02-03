@@ -1,16 +1,18 @@
 package com.main.services.task;
 
+import com.main.repositories.TaskScanRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TaskScanService extends TaskService {
+public class TaskScanService extends TaskService implements TaskScanRepository {
     public TaskScanService(NamedParameterJdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 
+    @Override
     public Long findMachineIdForTaskScan(Long vendingPointId) {
         return findMachineIdForTask(
                 vendingPointId,
@@ -20,6 +22,7 @@ public class TaskScanService extends TaskService {
         );
     }
 
+    @Override
     public boolean createTaskScan(Long orderId, Long machineId, Long scanTaskNumberPages) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
