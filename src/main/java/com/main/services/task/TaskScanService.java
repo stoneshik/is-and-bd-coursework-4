@@ -46,4 +46,25 @@ public class TaskScanService extends TaskService implements TaskScanRepository {
             return false;
         }
     }
+
+    @Override
+    public Long getScanTaskNumberPagesByOrderId(Long orderId) {
+        try {
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+            mapSqlParameterSource.addValue("order_id", orderId);
+            return jdbcTemplate.queryForObject(
+                    """
+                    SELECT scan_task_number_pages FROM scan_tasks
+                        INNER JOIN orders
+                        ON orders.order_id = :order_id
+                    WHERE orders.order_id = scan_tasks.order_id;""",
+                    mapSqlParameterSource,
+                    (rs, rowNum) -> {
+                        return rs.getLong("scan_task_number_pages");
+                    }
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }
