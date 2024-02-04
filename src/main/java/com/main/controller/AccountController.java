@@ -2,6 +2,7 @@ package com.main.controller;
 
 import com.main.ResponseMessageWrapper;
 import com.main.entities.account.BalanceEntity;
+import com.main.entities.replenish.ReplenishEntity;
 import com.main.security.AuthorizeHandler;
 import com.main.services.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,5 +41,28 @@ public class AccountController {
             );
         }
         return new ResponseEntity<>(balanceEntity, HttpStatus.OK);
+    }
+
+    @GetMapping(
+            path = "/api/account/get_all_replenishes",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Object> getReplenishes(HttpServletRequest httpServletRequest) {
+        final String login = authorizeHandler.getLoginBySessionId(httpServletRequest);
+        if (login.isEmpty()) {
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Пользователь не авторизован"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        final Long accountId = accountService.getAccountId(login);
+        if (accountId == null) {
+            return new ResponseEntity<>(
+                    new ResponseMessageWrapper("Счет не найден"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        List<ReplenishEntity> replenishes = accountService.getAllReplenishesByAccountId(accountId);
+        return new ResponseEntity<>(replenishes, HttpStatus.OK);
     }
 }

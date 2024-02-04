@@ -69,4 +69,8 @@ public class RouterController {
     public String getFileById(@PathVariable String id) {
         return "index";
     }
+    @GetMapping("/replenishes")
+    public String getReplenishes() {
+        return "index";
+    }
 }
