@@ -66,11 +66,15 @@ public class RouterController {
         return "index";
     }
     @GetMapping("/file/{id}")
-    public String getFileById(@PathVariable String id) {
+    public String getFileByIdPage(@PathVariable String id) {
         return "index";
     }
     @GetMapping("/replenishes")
-    public String getReplenishes() {
+    public String getReplenishesPage() {
+        return "index";
+    }
+    @GetMapping("/new_replenish")
+    public String getNewReplenishPage() {
         return "index";
     }
 }

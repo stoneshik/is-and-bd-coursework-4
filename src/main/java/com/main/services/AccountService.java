@@ -81,31 +81,4 @@ public class AccountService implements AccountRepository {
             return false;
         }
     }
-
-    @Override
-    public List<ReplenishEntity> getAllReplenishesByAccountId(Long accountId) {
-        try {
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
-            mapSqlParameterSource.addValue("account_id", accountId);
-            return jdbcTemplate.query(
-                    """
-                    SELECT replenish_id,
-                           account_id,
-                           replenish_amount,
-                           replenish_datetime FROM replenishes
-                    WHERE account_id = :account_id;""",
-                    mapSqlParameterSource,
-                    (rs, rowNum) -> {
-                        return new ReplenishEntity(
-                                rs.getLong("replenish_id"),
-                                rs.getLong("account_id"),
-                                rs.getBigDecimal("replenish_amount"),
-                                rs.getDate("replenish_datetime")
-                        );
-                    }
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
 }

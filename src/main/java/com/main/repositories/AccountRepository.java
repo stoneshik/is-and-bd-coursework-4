@@ -8,10 +8,6 @@ import java.util.List;
 
 public interface AccountRepository {
     Long getAccountId(String login);
-
     BalanceEntity getBalance(String login);
-
     boolean updateBalance(Long accountId, BigDecimal newAccountBalance);
-
-    List<ReplenishEntity> getAllReplenishesByAccountId(Long accountId);
 }
