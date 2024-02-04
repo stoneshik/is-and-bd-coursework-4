@@ -2,6 +2,7 @@ package com.main.controller.order.remove;
 
 import com.main.entities.account.BalanceEntity;
 import com.main.entities.order.OrderEntity;
+import com.main.entities.order.OrderType;
 import com.main.services.FileService;
 import com.main.services.OrderService;
 
@@ -16,9 +17,11 @@ public class OrderNotPaidRemoveStrategy implements OrderRemoveStrategy {
 
     @Override
     public boolean remove(OrderEntity orderEntity, BalanceEntity balanceEntity) {
-        final boolean isAttachedFilesRemoved = fileService.removeFilesByOrderId(orderEntity.getOrderId());
-        if (!isAttachedFilesRemoved) {
-            return false;
+        if (orderEntity.getOrderType() == OrderType.PRINT) {
+            final boolean isAttachedFilesRemoved = fileService.removeFilesByOrderId(orderEntity.getOrderId());
+            if (!isAttachedFilesRemoved) {
+                return false;
+            }
         }
         return orderService.removeById(orderEntity.getOrderId());
     }
