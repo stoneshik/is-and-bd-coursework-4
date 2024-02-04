@@ -34,8 +34,6 @@ VALUES
     (default, 2, 200, default),
     (default, 2, 170, default)
     ;
-UPDATE accounts SET account_balance = 340 WHERE account_id = 1;
-UPDATE accounts SET account_balance = 1120 WHERE account_id = 2;
 -- Вендинговые точки
 INSERT INTO vending_points(
     vending_point_id,
