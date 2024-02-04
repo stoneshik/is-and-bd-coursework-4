@@ -1,12 +1,12 @@
 package com.main.repositories;
 
 import com.main.entities.file.FileInfoEntity;
-import com.main.entities.file.FileWithContentEntity;
+import com.main.entities.file.FileWithOidEntity;
 
 import java.util.List;
 
 public interface FileRepository {
-    FileWithContentEntity getFileById(Long userId, Long fileId);
+    FileWithOidEntity getFileById(Long userId, Long fileId);
 
     byte[] loadFileByOid(Long oid);
 

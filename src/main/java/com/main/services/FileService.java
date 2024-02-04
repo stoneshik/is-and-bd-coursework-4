@@ -1,7 +1,7 @@
 package com.main.services;
 
 import com.main.entities.file.FileInfoEntity;
-import com.main.entities.file.FileWithContentEntity;
+import com.main.entities.file.FileWithOidEntity;
 import com.main.repositories.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,7 +17,7 @@ public class FileService implements FileRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
-    public FileWithContentEntity getFileById(Long userId, Long fileId) {
+    public FileWithOidEntity getFileById(Long userId, Long fileId) {
         try {
             MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
             mapSqlParameterSource.addValue("user_id", userId);
@@ -32,7 +32,7 @@ public class FileService implements FileRepository {
                     WHERE user_id = :user_id AND file_id = :file_id;""",
                     mapSqlParameterSource,
                     (rs, rowNum) -> {
-                        return new FileWithContentEntity(
+                        return new FileWithOidEntity(
                                 rs.getLong("file_id"),
                                 rs.getLong("user_id"),
                                 rs.getString("file_name"),
@@ -59,7 +59,7 @@ public class FileService implements FileRepository {
                     }
             );
         } catch (EmptyResultDataAccessException e) {
-            return new byte[]{};
+            return null;
         }
     }
 

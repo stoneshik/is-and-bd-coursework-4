@@ -5,22 +5,22 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class FileWithContentEntity {
+public class FileWithOidEntity {
     private Long fileId;
     private Long userId;
     private String fileName;
     private Date fileLoadDatetime;
-    private byte[] fileContent;
-    public FileWithContentEntity(
+    private Long fileOid;
+    public FileWithOidEntity(
             Long fileId,
             Long userId,
             String fileName,
             Date fileLoadDatetime,
-            byte[] fileContent) {
+            Long fileOid) {
         this.fileId = fileId;
         this.userId = userId;
         this.fileName = fileName;
         this.fileLoadDatetime = fileLoadDatetime;
-        this.fileContent = fileContent;
+        this.fileOid = fileOid;
     }
 }

@@ -65,4 +65,8 @@ public class RouterController {
     public String getOrderScanPage(@PathVariable String id) {
         return "index";
     }
+    @GetMapping("/file/{id}")
+    public String getFileById(@PathVariable String id) {
+        return "index";
+    }
 }
