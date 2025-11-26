@@ -6,7 +6,7 @@ CREATE TEMP TABLE config (
     value varchar(100)
 );
 
--- Заполняем конфигурацию (уменьшим объем для тестирования)
+-- Заполняем конфигурацию
 INSERT INTO config VALUES
     ('USERS_COUNT', '100000'),
     ('VENDING_POINTS_COUNT', '500'),
@@ -51,9 +51,6 @@ SELECT
     now() - (random() * get_config('DAYS_BACK') * interval '1 day'),
     (array['unverified','verified','banned'])[floor(random()*3)+1]::user_status_enum
 FROM generate_series(1, get_config('USERS_COUNT')) seq;
-
--- Даем время на выполнение триггеров
-SELECT pg_sleep(2);
 
 -- 3. Генерируем вендинговые точки
 INSERT INTO vending_points (vending_point_address, vending_point_description, vending_point_number_machines, vending_point_cords)
